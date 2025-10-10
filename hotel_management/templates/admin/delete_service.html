@@ -1,0 +1,22 @@
+{% extends 'admin/base.html' %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'admin_service_management' %}">Quản lý dịch vụ</a></li>
+<li class="breadcrumb-item active" aria-current="page">Xóa dịch vụ</li>
+{% endblock %}
+
+{% block admin_content %}
+<div class="card">
+    <div class="card-header">
+        <h5>Xác nhận xóa dịch vụ</h5>
+    </div>
+    <div class="card-body">
+        <p>Bạn có chắc chắn muốn xóa dịch vụ <strong>{{ service.ten_dv }}</strong>?</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Xác nhận xóa</button>
+            <a href="{% url 'admin_service_management' %}" class="btn btn-outline-secondary">Hủy bỏ</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

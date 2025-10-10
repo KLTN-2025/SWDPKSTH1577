@@ -1,0 +1,165 @@
+{% extends 'admin/base.html' %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'admin_request_management' %}">Quản lý yêu cầu</a></li>
+<li class="breadcrumb-item active" aria-current="page">Xử lý yêu cầu</li>
+{% endblock %}
+
+{% block admin_content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5>Xử lý yêu cầu #{{ yeu_cau.ma_yc }}</h5>
+        <div>
+            
+            <button class="btn btn-sm btn-warning me-2" data-bs-toggle="modal" data-bs-target="#editRequestModal">
+                <i class="fas fa-edit"></i> Chỉnh sửa
+            </button>
+            
+            <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteRequestModal">
+                <i class="fas fa-trash"></i> Xóa
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h6>Thông tin khách hàng</h6>
+                <p><strong>Tên:</strong> {{ yeu_cau.khach_hang.ten_kh }}</p>
+                <p><strong>Phòng:</strong> {{ yeu_cau.phong.ten_p }}</p>
+            </div>
+            <div class="col-md-6">
+                <h6>Chi tiết yêu cầu</h6>
+                <p><strong>Loại yêu cầu:</strong> {{ yeu_cau.get_loai_yc_display }}</p>
+                <p><strong>Ngày tạo:</strong> {{ yeu_cau.ngay_tao|date:"d/m/Y H:i" }}</p>
+                <p><strong>Tình trạng:</strong> 
+                    {% if yeu_cau.tinh_trang == 'cho_phan_cong' %}
+                    <span class="badge bg-secondary">Chưa phân công</span>
+                    {% elif yeu_cau.tinh_trang == 'da_phan_cong' %}
+                    <span class="badge bg-primary">Đã phân công</span>
+                    {% elif yeu_cau.tinh_trang == 'dang_xu_ly' %}
+                    <span class="badge bg-warning">Đang xử lý</span>
+                    {% else %}
+                    <span class="badge bg-success">Đã xử lý</span>
+                    {% endif %}
+                </p>
+            </div>
+            <div class="col-md-12 mt-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h6>Nội dung yêu cầu</h6>
+                    </div>
+                    <div class="card-body">
+                        <p>{{ yeu_cau.noi_dung_yc }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label">Nhân viên xử lý</label>
+                <select name="staff" class="form-select">
+                    <option value="">-- Chọn nhân viên --</option>
+                    {% for staff in available_staff %}
+                    <option value="{{ staff.ma_nv }}" {% if yeu_cau.nhan_vien == staff %}selected{% endif %}>
+                        {{ staff.ten_nv }} ({{ staff.get_vi_tri_display }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Tình trạng</label>
+                <select name="action" class="form-select">
+                    <option value="assign" {% if yeu_cau.tinh_trang == 'cho_phan_cong' %}selected{% endif %}>Phân công</option>
+                    <option value="processing" {% if yeu_cau.tinh_trang == 'da_phan_cong' %}selected{% endif %}>Đang xử lý</option>
+                    <option value="complete" {% if yeu_cau.tinh_trang == 'dang_xu_ly' %}selected{% endif %}>Hoàn thành</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Ghi chú</label>
+                <textarea name="note" class="form-control" rows="3">{{ yeu_cau.ghi_chu }}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+            <a href="{% url 'admin_request_management' %}" class="btn btn-outline-secondary">Quay lại</a>
+        </form>
+    </div>
+</div>
+
+
+<div class="modal fade" id="editRequestModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chỉnh sửa yêu cầu #{{ yeu_cau.ma_yc }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% url 'edit_request' yeu_cau.ma_yc %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Mã yêu cầu</label>
+                        <input type="text" class="form-control" value="{{ yeu_cau.ma_yc }}" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Khách hàng</label>
+                        <input type="text" class="form-control" value="{{ yeu_cau.khach_hang.ten_kh }}" readonly>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Loại yêu cầu</label>
+                        <select name="loai_yc" class="form-select">
+                            {% for choice in yeu_cau.LOAI_YC_CHOICES %}
+                            <option value="{{ choice.0 }}" {% if choice.0 == yeu_cau.loai_yc %}selected{% endif %}>
+                                {{ choice.1 }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Thời gian tạo</label>
+                        <input type="text" class="form-control" value="{{ yeu_cau.ngay_tao|date:'d/m/Y H:i' }}" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Nội dung yêu cầu</label>
+                        <textarea name="noi_dung_yc" class="form-control" rows="4">{{ yeu_cau.noi_dung_yc }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phòng</label>
+                        <input type="text" class="form-control" value="{{ yeu_cau.phong.ten_p }} ({{ yeu_cau.phong.get_loai_p_display }})" readonly>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="deleteRequestModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Xác nhận xóa yêu cầu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa yêu cầu #{{ yeu_cau.ma_yc }} của khách hàng {{ yeu_cau.khach_hang.ten_kh }} không?</p>
+                <p class="text-danger">Hành động này không thể hoàn tác!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy bỏ</button>
+                <form method="post" action="{% url 'delete_request' yeu_cau.ma_yc %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Xác nhận xóa</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

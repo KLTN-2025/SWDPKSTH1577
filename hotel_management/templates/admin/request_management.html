@@ -1,0 +1,86 @@
+{% extends 'admin/base.html' %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active" aria-current="page">Quản lý yêu cầu</li>
+{% endblock %}
+
+{% block admin_content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Danh sách yêu cầu</h5>
+        <div class="d-flex">
+            <form method="get" action="{% url 'admin_request_management' %}" class="me-2">
+                <div class="input-group">
+                    <input type="text" 
+                           name="q" 
+                           class="form-control form-control-sm" 
+                           placeholder="Tìm theo mã, tên KH..." 
+                           value="{{ request.GET.q }}">
+                    <button type="submit" class="btn btn-sm btn-primary">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+            <form method="get" action="{% url 'admin_request_management' %}">
+                <div class="input-group">
+                    <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="cho_phan_cong" {% if request.GET.status == 'cho_phan_cong' %}selected{% endif %}>Chưa phân công</option>
+                        <option value="da_phan_cong" {% if request.GET.status == 'da_phan_cong' %}selected{% endif %}>Đã phân công</option>
+                        <option value="dang_xu_ly" {% if request.GET.status == 'dang_xu_ly' %}selected{% endif %}>Đang xử lý</option>
+                        <option value="da_xu_ly" {% if request.GET.status == 'da_xu_ly' %}selected{% endif %}>Đã xử lý</option>
+                    </select>
+                    {% if request.GET.q %}
+                        <input type="hidden" name="q" value="{{ request.GET.q }}">
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Mã YC</th>
+                        <th>Khách hàng</th>
+                        <th>Phòng</th>
+                        <th>Loại YC</th>
+                        <th>Nội dung</th>
+                        <th>Ngày tạo</th>
+                        <th>Tình trạng</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for request in page_obj %}
+                    <tr>
+                        <td>#{{ request.ma_yc }}</td>
+                        <td>{{ request.khach_hang.ten_kh }}</td>
+                        <td>{{ request.phong.ten_p }}</td>
+                        <td>{{ request.get_loai_yc_display }}</td>
+                        <td title="{{ request.noi_dung_yc }}">{{ request.noi_dung_yc|truncatechars:30 }}</td>
+                        <td>{{ request.ngay_tao|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            {% if request.tinh_trang == 'cho_phan_cong' %}
+                            <span class="badge bg-secondary">Chưa phân công</span>
+                            {% elif request.tinh_trang == 'da_phan_cong' %}
+                            <span class="badge bg-primary">Đã phân công</span>
+                            {% elif request.tinh_trang == 'dang_xu_ly' %}
+                            <span class="badge bg-warning">Đang xử lý</span>
+                            {% else %}
+                            <span class="badge bg-success">Đã xử lý</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'process_request' request.ma_yc %}" class="btn btn-sm btn-outline-primary">Xử lý</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% include 'admin/pagination.html' with page_obj=page_obj %}
+    </div>
+</div>
+{% endblock %}

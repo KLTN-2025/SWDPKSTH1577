@@ -1,0 +1,166 @@
+{% extends 'admin/base.html' %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active" aria-current="page">Quản lý lịch làm việc</li>
+{% endblock %}
+
+{% block admin_content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+            <a href="?year={{ prev_month.year }}&month={{ prev_month.month }}" class="btn btn-sm btn-outline-secondary me-2">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            <span class="h5 mb-0">{{ current_date|date:"F Y" }}</span>
+            <a href="?year={{ next_month.year }}&month={{ next_month.month }}" class="btn btn-sm btn-outline-secondary ms-2">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        </div>
+        <a href="#" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addScheduleModal">
+            <i class="fas fa-plus me-1"></i> Thêm lịch làm việc
+        </a>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Nhân viên</th>
+                        <th class="text-center">Thứ 2</th>
+                        <th class="text-center">Thứ 3</th>
+                        <th class="text-center">Thứ 4</th>
+                        <th class="text-center">Thứ 5</th>
+                        <th class="text-center">Thứ 6</th>
+                        <th class="text-center">Thứ 7</th>
+                        <th class="text-center">Chủ nhật</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for employee in staff %}
+                        {% for week in weeks %}
+                        <tr>
+                            {% if forloop.first %}
+                            <td rowspan="{{ weeks|length }}" style="vertical-align: middle;">{{ employee.ten_nv }}</td>
+                            {% endif %}
+                            
+                            {% for day in week %}
+                            <td class="text-center {% if day and day.weekday >= 5 %}bg-light{% endif %}" style="height: 100px;">
+                                {% if day %}
+                                    <div class="d-flex flex-column h-100">
+                                        <div class="mb-1 small">{{ day.day }}</div>
+                                        <div class="flex-grow-1">
+                                            {% for schedule in schedules %}
+                                                {% if schedule.nhan_vien == employee and schedule.ngay_lam == day %}
+                                                <div class="p-1 mb-1 rounded schedule-item 
+                                                    {% if schedule.ca_lam == 'sang' %}bg-warning text-dark
+                                                    {% elif schedule.ca_lam == 'chieu' %}bg-info text-dark
+                                                    {% else %}bg-danger text-white{% endif %}">
+                                                    <span class="schedule-short">
+                                                        {% if schedule.ca_lam == 'sang' %}Sáng: 6h30-11h
+                                                        {% elif schedule.ca_lam == 'chieu' %}Chiều: 11h-17h
+                                                        {% else %}Tối: 17h-22h{% endif %}
+                                                    </span>
+                                                    <a href="{% url 'delete_schedule' schedule.ma_lich %}" class="text-danger ms-1">
+                                                        <i class="fas fa-times"></i>
+                                                    </a>
+                                                </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="addScheduleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Thêm lịch làm việc</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Nhân viên</label>
+                        {{ form.nhan_vien }}
+                        {{ form.nhan_vien.errors }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Ngày làm</label>
+                        {{ form.ngay_lam }}
+                        {{ form.ngay_lam.errors }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Ca làm</label>
+                        {{ form.ca_lam }}
+                        {{ form.ca_lam.errors }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Ghi chú</label>
+                        {{ form.ghi_chu }}
+                        {{ form.ghi_chu.errors }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary">Lưu lịch</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+<style>
+    
+    .table th, .table td {
+        min-width: 80px;  
+        width: 80px;
+        max-width: 80px;
+        vertical-align: top;
+        padding: 0.3rem;
+    }
+    
+    
+    .schedule-item {
+        font-size: 0.7rem;
+        margin-bottom: 1px;
+        padding: 0.1rem 0.2rem !important;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .schedule-short {
+        font-weight: bold;
+    }
+    
+    
+    .schedule-item .fa-times {
+        font-size: 0.6rem;
+    }
+    
+    
+    .small {
+        font-size: 0.8rem;
+    }
+    
+    
+    .table thead th {
+        font-size: 0.8rem;
+        padding: 0.5rem;
+    }
+</style>
