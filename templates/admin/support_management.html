@@ -1,0 +1,123 @@
+{% extends 'admin/base.html' %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active" aria-current="page">Quản lý hỗ trợ</li>
+{% endblock %}
+
+{% block admin_content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Yêu cầu hỗ trợ</h5>
+        <div class="d-flex">
+            <input type="text" class="form-control form-control-sm me-2" placeholder="Tìm kiếm..." id="searchInput">
+            <select class="form-select form-select-sm" id="typeFilter">
+                <option value="">Tất cả loại</option>
+                <option value="buong_phong">Buồng phòng</option>
+                <option value="ky_thuat">Kỹ thuật</option>
+                <option value="phuc_vu">Phục vụ</option>
+                <option value="le_tan">Lễ tân</option>
+            </select>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover" id="supportTable">
+                <thead>
+                    <tr>
+                        <th>Mã YC</th>
+                        <th>Khách hàng</th>
+                        <th>Phòng</th>
+                        <th>Loại YC</th>
+                        <th>Ngày tạo</th>
+                        <th>Tình trạng</th>
+                        <th>Nhân viên</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for request in page_obj %}
+                    <tr>
+                        <td>#{{ request.ma_yc }}</td>
+                        <td>{{ request.khach_hang.ten_kh }}</td>
+                        <td>{{ request.phong.ten_p }}</td>
+                        <td>{{ request.get_loai_yc_display }}</td>
+                        <td>{{ request.ngay_tao|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            {% if request.tinh_trang == 'cho_phan_cong' %}
+                            <span class="badge bg-secondary">Chưa phân công</span>
+                            {% elif request.tinh_trang == 'da_phan_cong' %}
+                            <span class="badge bg-primary">Đã phân công</span>
+                            {% elif request.tinh_trang == 'dang_xu_ly' %}
+                            <span class="badge bg-warning">Đang xử lý</span>
+                            {% else %}
+                            <span class="badge bg-success">Đã xử lý</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if request.nhan_vien %}
+                            {{ request.nhan_vien.ten_nv }}
+                            {% else %}
+                            --
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'process_request' request.ma_yc %}" 
+                               class="btn btn-sm btn-outline-primary" 
+                               data-bs-toggle="tooltip" 
+                               title="Xử lý yêu cầu">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% include 'admin/pagination.html' with page_obj=page_obj %}
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    
+    const searchInput = document.getElementById('searchInput');
+    const typeFilter = document.getElementById('typeFilter');
+    const supportTable = document.getElementById('supportTable').getElementsByTagName('tbody')[0];
+    const rows = supportTable.getElementsByTagName('tr');
+    
+    function filterRequests() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const typeValue = typeFilter.value;
+        
+        for (let row of rows) {
+            const cells = row.getElementsByTagName('td');
+            const customerName = cells[1].textContent.toLowerCase();
+            const roomName = cells[2].textContent.toLowerCase();
+            const requestType = cells[3].textContent.toLowerCase();
+            
+            const matchesSearch = customerName.includes(searchTerm) || roomName.includes(searchTerm);
+            const matchesType = typeValue === '' || 
+                (typeValue === 'buong_phong' && requestType.includes('buồng')) ||
+                (typeValue === 'ky_thuat' && requestType.includes('kỹ thuật')) ||
+                (typeValue === 'phuc_vu' && requestType.includes('phục vụ')) ||
+                (typeValue === 'le_tan' && requestType.includes('lễ tân'));
+            
+            if (matchesSearch && matchesType) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        }
+    }
+    
+    searchInput.addEventListener('keyup', filterRequests);
+    typeFilter.addEventListener('change', filterRequests);
+});
+</script>
+{% endblock %}

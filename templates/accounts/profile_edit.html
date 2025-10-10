@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body p-0">
+                    
+                    <div class="profile-image-container position-relative" 
+                         style="width: 100%; height: 250px; overflow: hidden; border-radius: 20px; background-color: #e0e0e0;">
+                         
+                        
+                        <img src="{% if form.avatar.value %}{{ form.avatar.value.url }}{% else %}{% static 'images/default-avartar.jpg' %}{% endif %}"
+                             class="rounded-circle position-absolute start-0 ms-4" 
+                             style="width: 180px; height: 180px; object-fit: cover; top: 50%; transform: translateY(-50%); border: 5px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.1);"
+                             id="avatar-preview">
+                             
+                        
+                        <label for="id_avatar" class="btn btn-primary rounded-circle position-absolute" 
+                               style="width: 40px; height: 40px; top: 65%; left: 150px; transform: translateY(-50%); display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                            <i class="fas fa-pencil-alt"></i>
+                        </label>
+                        {{ form.avatar }}
+                    </div>
+                    
+                    <div class="p-4">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label">Mã khách hàng</label>
+                                <input type="text" class="form-control" value="{{ user.id }}" style="background-color: #EEF6FB;" disabled>
+                            </div>
+                            <div class="">
+                                    <label class="form-label">Họ</label>
+                                    {{ form.last_name }}
+                                </div>
+                                <div class="mb-3"></div>
+                                    <label class="form-label">Tên</label>
+                                    {{ form.first_name }}
+                                </div>
+                           
+                            <div class="mb-3">
+                                <label class="form-label e" >Email</label>
+                                {{ form.email }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label s">Số điện thoại</label>
+                                {{ form.sdt }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label d">Địa chỉ</label>
+                                {{ form.dia_chi }}
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-4">
+                                <a href="{% url 'change_password' %}" class="btn btn-outline-secondary">Đổi mật khẩu</a>
+                                <div>
+                                    <a href="{% url 'profile' %}" class="btn btn-secondary">Hủy</a>
+                                    <button type="submit" class="btn btn-primary ms-2">Lưu thay đổi</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .profile-image-container {
+        position: relative;
+        background-color: #f8f9fa;
+    }
+    
+    
+    .btn-primary.rounded-circle:hover {
+        transform: translateY(-50%) scale(1.1);
+        transition: all 0.3s ease;
+    }
+    
+   
+    input[type="text"], 
+    input[type="email"], 
+    textarea {
+        background-color: #EEF6FB !important;
+        border: 1px solid #ced4da;
+        
+    }
+    input[type="text"]{
+        min-width: 800px;
+        border-radius: 5px;
+    max-height: 30px;}
+
+        input[type="email"]{
+             margin-left: 25px;
+        min-width: 800px;
+        border-radius: 5px;}
+        .e{padding-left: 25px;}
+        
+       
+        .s{padding-left: 25px;}
+
+        
+
+        .d{padding-left: 25px;}
+
+    textarea{max-height: 30px;
+        min-width: 800px;
+        margin-left: 25px;
+        border-radius: 5px;
+    resize: none;}
+    
+    
+    #id_avatar {
+        display: none;
+    }
+</style>
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<script>
+    
+    document.getElementById('id_avatar').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('avatar-preview').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends 'admin/base.html' %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'admin_customer_management' %}">Quản lý khách hàng</a></li>
+<li class="breadcrumb-item"><a href="{% url 'customer_detail' customer.ma_kh %}">{{ customer.ten_kh }}</a></li>
+<li class="breadcrumb-item active" aria-current="page">Chỉnh sửa</li>
+{% endblock %}
+
+{% block admin_content %}
+<div class="card">
+    <div class="card-header">
+        <h5>Chỉnh sửa thông tin khách hàng</h5>
+    </div>
+    <div class="card-body">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-4 text-center">
+                    <div class="mb-3">
+                        {% if customer.anh_dai_dien %}
+                            <img id="avatarPreview" src="{{ customer.anh_dai_dien.url }}" class="img-thumbnail mb-2" width="200" alt="Avatar">
+                        {% else %}
+                            <img id="avatarPreview" src="/static/images/default-avartar.jpg" class="img-thumbnail mb-2" width="200" alt="Default Avatar">
+                        {% endif %}
+                        <div class="form-group">
+                            <label for="{{ form.anh_dai_dien.id_for_label }}" class="form-label">Ảnh đại diện</label>
+                            <input type="file" class="form-control" name="{{ form.anh_dai_dien.name }}" id="{{ form.anh_dai_dien.id_for_label }}" onchange="previewImage(this)">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.ten_kh.id_for_label }}" class="form-label">Họ tên</label>
+                            <input type="text" class="form-control" name="{{ form.ten_kh.name }}" id="{{ form.ten_kh.id_for_label }}" value="{{ form.ten_kh.value }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+                            <input type="email" class="form-control" name="{{ form.email.name }}" id="{{ form.email.id_for_label }}" value="{{ form.email.value }}" required>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.sdt.id_for_label }}" class="form-label">Số điện thoại</label>
+                            <input type="text" class="form-control" name="{{ form.sdt.name }}" id="{{ form.sdt.id_for_label }}" value="{{ form.sdt.value }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Trạng thái tài khoản</label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="is_active" id="is_active" {% if customer.tai_khoan.is_active %}checked{% endif %}>
+                                <label class="form-check-label" for="is_active">
+                                    {% if customer.tai_khoan.is_active %}
+                                        Hoạt động
+                                    {% else %}
+                                        Không hoạt động
+                                    {% endif %}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.dia_chi.id_for_label }}" class="form-label">Địa chỉ</label>
+                        <textarea class="form-control" name="{{ form.dia_chi.name }}" id="{{ form.dia_chi.id_for_label }}" rows="3">{{ form.dia_chi.value }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="new_password" class="form-label">Đổi mật khẩu (để trống nếu không đổi)</label>
+                        <input type="password" class="form-control" name="new_password" id="new_password">
+                        <small class="text-muted">Mật khẩu phải có ít nhất 8 ký tự</small>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-end mt-3">
+                <a href="{% url 'customer_detail' customer.ma_kh %}" class="btn btn-secondary me-2">Hủy</a>
+                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            
+            reader.onload = function(e) {
+                document.getElementById('avatarPreview').src = e.target.result;
+            }
+            
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+{% endblock %}
