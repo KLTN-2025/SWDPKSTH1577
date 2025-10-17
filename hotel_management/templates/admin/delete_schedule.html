@@ -1,0 +1,23 @@
+{% extends 'admin/base.html' %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'admin_schedule_management' %}">Quản lý lịch làm việc</a></li>
+<li class="breadcrumb-item active" aria-current="page">Xóa lịch làm việc</li>
+{% endblock %}
+
+{% block admin_content %}
+<div class="card">
+    <div class="card-header">
+        <h5>Xác nhận xóa lịch làm việc</h5>
+    </div>
+    <div class="card-body">
+        <p>Bạn có chắc chắn muốn xóa lịch làm việc của <strong>{{ schedule.nhan_vien.ten_nv }}</strong> vào ngày 
+        <strong>{{ schedule.ngay_lam|date:"d/m/Y" }}</strong> ({{ schedule.get_ca_lam_display }})?</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Xác nhận xóa</button>
+            <a href="{% url 'admin_schedule_management' %}" class="btn btn-outline-secondary">Hủy bỏ</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

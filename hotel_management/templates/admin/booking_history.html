@@ -1,0 +1,107 @@
+{% extends 'admin/base.html' %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active" aria-current="page">Lịch sử đặt phòng</li>
+{% endblock %}
+
+{% block admin_content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Lịch sử đặt phòng</h5>
+        <div class="d-flex">
+            <input type="text" class="form-control form-control-sm me-2" placeholder="Tìm kiếm..." id="searchInput">
+            <select class="form-select form-select-sm" id="statusFilter">
+                <option value="">Tất cả trạng thái</option>
+                <option value="cho_xac_nhan">Chờ xác nhận</option>
+                <option value="da_xac_nhan">Đã xác nhận</option>
+                <option value="da_checkin">Đã check-in</option>
+                <option value="da_checkout">Đã check-out</option>
+                <option value="da_huy">Đã hủy</option>
+            </select>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover" id="bookingTable">
+                <thead>
+                    <tr>
+                        <th>Mã đặt</th>
+                        <th>Khách hàng</th>
+                        <th>Phòng</th>
+                        <th>Ngày đặt</th>
+                        <th>Ngày nhận</th>
+                        <th>Ngày trả</th>
+                        <th>Tổng tiền</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in page_obj %}
+                    <tr>
+                        <td>#{{ booking.ma_ddp }}</td>
+                        <td>{{ booking.khach_hang.ten_kh }}</td>
+                        <td>{{ booking.phong.ten_p }}</td>
+                        <td>{{ booking.ngay_dat|date:"d/m/Y" }}</td>
+                        <td>{{ booking.ngay_nhan|date:"d/m/Y" }}</td>
+                        <td>{{ booking.ngay_tra|date:"d/m/Y" }}</td>
+                        <td>{{ booking.gia_ddp|floatformat:0 }} VND</td>
+                        <td>
+                            {% if booking.trang_thai == 'cho_xac_nhan' %}
+                            <span class="badge bg-warning">Chờ xác nhận</span>
+                            {% elif booking.trang_thai == 'da_xac_nhan' %}
+                            <span class="badge bg-primary">Đã xác nhận</span>
+                            {% elif booking.trang_thai == 'da_checkin' %}
+                            <span class="badge bg-success">Đã check-in</span>
+                            {% elif booking.trang_thai == 'da_checkout' %}
+                            <span class="badge bg-secondary">Đã check-out</span>
+                            {% else %}
+                            <span class="badge bg-danger">Đã hủy</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% include 'admin/pagination.html' with page_obj=page_obj %}
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const statusFilter = document.getElementById('statusFilter');
+    const bookingTable = document.getElementById('bookingTable').getElementsByTagName('tbody')[0];
+    const rows = bookingTable.getElementsByTagName('tr');
+    
+    function filterBookings() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const statusValue = statusFilter.value;
+        
+        for (let row of rows) {
+            const cells = row.getElementsByTagName('td');
+            const customerName = cells[1].textContent.toLowerCase();
+            const roomName = cells[2].textContent.toLowerCase();
+            const status = cells[7].getElementsByTagName('span')[0].textContent.toLowerCase();
+            
+            const matchesSearch = customerName.includes(searchTerm) || roomName.includes(searchTerm);
+            const matchesStatus = statusValue === '' || 
+                (statusValue === 'cho_xac_nhan' && status.includes('chờ')) ||
+                (statusValue === 'da_xac_nhan' && status.includes('đã xác nhận')) ||
+                (statusValue === 'da_checkin' && status.includes('check-in')) ||
+                (statusValue === 'da_checkout' && status.includes('check-out')) ||
+                (statusValue === 'da_huy' && status.includes('hủy'));
+            
+            if (matchesSearch && matchesStatus) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        }
+    }
+    
+    searchInput.addEventListener('keyup', filterBookings);
+    statusFilter.addEventListener('change', filterBookings);
+});
+</script>
+{% endblock %}

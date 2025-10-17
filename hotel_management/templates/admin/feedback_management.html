@@ -1,0 +1,61 @@
+{% extends 'admin/base.html' %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active" aria-current="page">Quản lý phản hồi</li>
+{% endblock %}
+
+{% block admin_content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Danh sách phản hồi</h5>
+        <div class="d-flex">
+            <input type="text" class="form-control form-control-sm me-2" placeholder="Tìm kiếm...">
+            <select class="form-select form-select-sm" style="width: 150px;">
+                <option>Tất cả trạng thái</option>
+                <option>Mới</option>
+                <option>Đang xử lý</option>
+                <option>Đã xử lý</option>
+            </select>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Mã PH</th>
+                        <th>Khách hàng</th>
+                        <th>Tiêu đề</th>
+                        <th>Ngày gửi</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for feedback in page_obj %}
+                    <tr>
+                        <td>#{{ feedback.ma_ph }}</td>
+                        <td>{{ feedback.khach_hang.ten_kh }}</td>
+                        <td>{{ feedback.tieu_de }}</td>
+                        <td>{{ feedback.ngay_tao|date:"d/m/Y" }}</td>
+                        <td>
+                            {% if feedback.trang_thai == 'moi' %}
+                            <span class="badge bg-warning">Mới</span>
+                            {% elif feedback.trang_thai == 'dang_xu_ly' %}
+                            <span class="badge bg-primary">Đang xử lý</span>
+                            {% else %}
+                            <span class="badge bg-success">Đã xử lý</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'process_feedback' feedback.ma_ph %}" class="btn btn-sm btn-outline-primary">Xử lý</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% include 'admin/pagination.html' with page_obj=page_obj %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends 'admin/base.html' %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'admin_booking_management' %}">Quản lý đặt phòng</a></li>
+<li class="breadcrumb-item active" aria-current="page">Xử lý đặt phòng</li>
+{% endblock %}
+
+{% block admin_content %}
+<div class="card">
+    <div class="card-header">
+        <h5>Xử lý đặt phòng #{{ booking.ma_ddp }}</h5>
+    </div>
+    <div class="card-body">
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h6>Thông tin khách hàng</h6>
+                <p><strong>Tên:</strong> {{ booking.khach_hang.ten_kh }}</p>
+                <p><strong>SĐT:</strong> {{ booking.khach_hang.sdt }}</p>
+                <p><strong>Email:</strong> {{ booking.khach_hang.email }}</p>
+            </div>
+            <div class="col-md-6">
+                <h6>Thông tin phòng</h6>
+                <p><strong>Phòng:</strong> {{ booking.phong.ten_p }} ({{ booking.phong.get_loai_p_display }})</p>
+                <p><strong>Ngày nhận:</strong> {{ booking.ngay_nhan|date:"d/m/Y" }}</p>
+                <p><strong>Ngày trả:</strong> {{ booking.ngay_tra|date:"d/m/Y" }}</p>
+                <p><strong>Tổng tiền:</strong> {{ booking.gia_ddp|floatformat:0 }} VND</p>
+            </div>
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label">Trạng thái</label>
+                <select name="action" class="form-select">
+                    {% if booking.trang_thai == 'cho_xac_nhan' %}
+                    <option value="confirm">Xác nhận đặt phòng</option>
+                    <option value="cancel">Hủy đặt phòng</option>
+                    {% elif booking.trang_thai == 'da_xac_nhan' %}
+                    <option value="checkin">Check-in khách</option>
+                    <option value="cancel">Hủy đặt phòng</option>
+                    {% elif booking.trang_thai == 'da_checkin' %}
+                    <option value="checkout">Check-out khách</option>
+                    {% endif %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Ghi chú</label>
+                <textarea name="note" class="form-control" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Xác nhận</button>
+            <a href="{% url 'admin_booking_management' %}" class="btn btn-outline-secondary">Quay lại</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

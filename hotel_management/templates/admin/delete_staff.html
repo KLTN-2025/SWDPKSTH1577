@@ -1,0 +1,11 @@
+{% extends 'admin/base.html' %}
+
+{% block content %}
+<h2>Xác nhận xóa nhân viên</h2>
+<p>Bạn có chắc chắn muốn xóa nhân viên {{ staff.ten_nv }}?</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Xóa</button>
+    <a href="{% url 'admin_staff_management' %}" class="btn btn-secondary">Hủy</a>
+</form>
+{% endblock %}

@@ -1,0 +1,112 @@
+{% extends 'admin/base.html' %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active" aria-current="page">Quản lý nhân viên</li>
+{% endblock %}
+
+{% block admin_content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+            <h5 class="mb-0">Danh sách nhân viên</h5>
+            <small class="text-muted">Tổng số: {{ page_obj.paginator.count }} nhân viên</small>
+        </div>
+        <div class="d-flex">
+            <form method="get" class="d-flex align-items-center">
+                <div class="input-group me-2" style="width: 250px;">
+                    <input type="text" 
+                           name="search" 
+                           class="form-control form-control-sm" 
+                           placeholder="Tìm theo tên, SĐT hoặc email..." 
+                           value="{{ search_query }}">
+                    <button class="btn btn-sm btn-primary" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                
+                <div class="dropdown me-2">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" 
+                            type="button" 
+                            id="filterDropdown" 
+                            data-bs-toggle="dropdown" 
+                            aria-expanded="false">
+                        <i class="fas fa-filter"></i> Lọc
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end p-3" style="width: 300px;" aria-labelledby="filterDropdown">
+                        <div class="mb-3">
+                            <label class="form-label small">Vị trí</label>
+                            <select name="position" class="form-select form-select-sm">
+                                <option value="">Tất cả vị trí</option>
+                                <option value="quan_ly" {% if position == 'quan_ly' %}selected{% endif %}>Quản lý</option>
+                                <option value="le_tan" {% if position == 'le_tan' %}selected{% endif %}>Lễ tân</option>
+                                <option value="phuc_vu" {% if position == 'phuc_vu' %}selected{% endif %}>Phục vụ</option>
+                                <option value="bao_ve" {% if position == 'bao_ve' %}selected{% endif %}>Bảo vệ</option>
+                                <!-- Add other positions as needed -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small">Trạng thái</label>
+                            <select name="status" class="form-select form-select-sm">
+                                <option value="">Tất cả trạng thái</option>
+                                <option value="dang_lam" {% if status == 'dang_lam' %}selected{% endif %}>Đang làm việc</option>
+                                <option value="nghi_viec" {% if status == 'nghi_viec' %}selected{% endif %}>Nghỉ việc</option>
+                            </select>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'admin_staff_management' %}" class="btn btn-sm btn-outline-secondary">Xóa bộ lọc</a>
+                            <button type="submit" class="btn btn-sm btn-primary">Áp dụng</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <a href="{% url 'add_staff' %}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus me-1"></i> Thêm nhân viên
+                </a>
+            </form>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Mã NV</th>
+                        <th>Ảnh</th>
+                        <th>Tên nhân viên</th>
+                        <th>Vị trí</th>
+                        <th>Trạng thái</th>
+                        <th>SĐT</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for staff in page_obj %}
+                    <tr>
+                        <td>{{ staff.ma_nv }}</td>
+                        <td>
+                            <img src="{{ staff.anh_dai_dien.url|default:'/static/images/default-avatar.png' }}" 
+                                 class="rounded-circle" width="40" height="40" alt="Avatar">
+                        </td>
+                        <td>{{ staff.ten_nv }}</td>
+                        <td>{{ staff.get_vi_tri_display }}</td>
+                        <td>
+                            {% if staff.trang_thai == 'dang_lam' %}
+                            <span class="badge bg-success">Đang làm</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Nghỉ việc</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ staff.sdt }}</td>
+                        <td>
+                            <a href="{% url 'edit_staff' staff.ma_nv %}" class="btn btn-sm btn-outline-primary">Sửa</a>
+                            <a href="{% url 'delete_staff' staff.ma_nv %}" class="btn btn-sm btn-outline-danger">Xóa</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% include 'admin/pagination.html' with page_obj=page_obj %}
+    </div>
+</div>
+{% endblock %}

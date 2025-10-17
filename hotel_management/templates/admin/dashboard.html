@@ -1,0 +1,162 @@
+{% extends 'admin/base.html' %}
+{% load humanize %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+{% endblock %}
+
+{% block admin_content %}
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <div class="card stats-card primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-2">Tổng phòng</h6>
+                        <h3 class="mb-0">{{ total_rooms|intcomma }}</h3>
+                    </div>
+                    <div class="bg-primary bg-opacity-10 p-3 rounded">
+                        <i class="fas fa-bed text-primary fs-2"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card stats-card success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-2">Tổng đặt phòng</h6>
+                        <h3 class="mb-0">{{ total_bookings|intcomma }}</h3>
+                    </div>
+                    <div class="bg-success bg-opacity-10 p-3 rounded">
+                        <i class="fas fa-calendar-check text-success fs-2"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card stats-card warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-2">Tổng khách hàng</h6>
+                        <h3 class="mb-0">{{ total_customers|intcomma }}</h3>
+                    </div>
+                    <div class="bg-warning bg-opacity-10 p-3 rounded">
+                        <i class="fas fa-users text-warning fs-2"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card stats-card danger">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-2">Tổng dịch vụ</h6>
+                        <h3 class="mb-0">{{ total_services|intcomma }}</h3>
+                    </div>
+                    <div class="bg-danger bg-opacity-10 p-3 rounded">
+                        <i class="fas fa-concierge-bell text-danger fs-2"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">Đặt phòng gần đây</h6>
+                <a href="{% url 'admin_booking_management' %}" class="btn btn-sm btn-link">Xem tất cả</a>
+            </div>
+            <div class="card-body">
+                {% for booking in recent_bookings %}
+                <div class="recent-item primary mb-3">
+                    <div class="d-flex justify-content-between">
+                        <strong>#{{ booking.ma_ddp }} - {{ booking.khach_hang.ten_kh }}</strong>
+                        <span class="text-muted">{{ booking.ngay_dat|date:"d/m/Y" }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>{{ booking.phong.ten_p }}</span>
+                        <span>
+                            {% if booking.trang_thai == 'cho_xac_nhan' %}
+                            <span class="badge badge-waiting">Chờ xác nhận</span>
+                            {% elif booking.trang_thai == 'da_xac_nhan' %}
+                            <span class="badge badge-confirmed">Đã xác nhận</span>
+                            {% elif booking.trang_thai == 'da_checkin' %}
+                            <span class="badge badge-checked-in">Đã check-in</span>
+                            {% elif booking.trang_thai == 'da_checkout' %}
+                            <span class="badge badge-checked-out">Đã check-out</span>
+                            {% else %}
+                            <span class="badge badge-cancelled">Đã hủy</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-muted">Không có đặt phòng gần đây</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">Yêu cầu chưa xử lý</h6>
+                <a href="{% url 'admin_request_management' %}" class="btn btn-sm btn-link">Xem tất cả</a>
+            </div>
+            <div class="card-body">
+                {% for request in pending_requests %}
+                <div class="recent-item warning mb-3">
+                    <div class="d-flex justify-content-between">
+                        <strong>#{{ request.ma_yc }} - {{ request.khach_hang.ten_kh }}</strong>
+                        <span class="text-muted">{{ request.ngay_tao|date:"d/m/Y" }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>{{ request.get_loai_yc_display }}</span>
+                        <span>{{ request.phong.ten_p }}</span>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-muted">Không có yêu cầu chưa xử lý</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">Phản hồi mới</h6>
+                <a href="{% url 'admin_feedback_management' %}" class="btn btn-sm btn-link">Xem tất cả</a>
+            </div>
+            <div class="card-body">
+                {% for feedback in new_feedbacks %}
+                <div class="recent-item success mb-3">
+                    <div class="d-flex justify-content-between">
+                        <strong>{{ feedback.tieu_de }}</strong>
+                        <span class="text-muted">{{ feedback.ngay_tao|date:"d/m/Y" }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>{{ feedback.khach_hang.ten_kh }}</span>
+                        <span>{{ feedback.noi_dung|truncatechars:50 }}</span>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-muted">Không có phản hồi mới</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
