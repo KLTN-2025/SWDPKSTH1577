@@ -82,6 +82,12 @@ urlpatterns = [
     path('api/hot-rooms/', core_views.get_hot_rooms, name='hot_rooms_api'),
     path('create-paypal-order/', core_views.create_paypal_order, name='create_paypal_order'),
     path('capture-paypal-order/', core_views.capture_paypal_order, name='capture_paypal_order'),
+
+    path('staff/dashboard/', core_views.nhan_vien_dashboard, name='nhan_vien_dashboard'),
+    path('staff/schedule/', core_views.nhan_vien_schedule_management, name='nhan_vien_schedule_management'),
+    path('staff/requests/', core_views.nhan_vien_request_management, name='nhan_vien_request_management'),
+
+    path('subscribe/', core_views.subscribe_newsletter, name='subscribe_newsletter'),
 ]
 
 if settings.DEBUG:

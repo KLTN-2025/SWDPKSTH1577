@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'django.contrib.sites',
     'core',
     'accounts',
     'chatbot',
@@ -163,8 +164,13 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  
-
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'anhtuan167203@gmail.com'
+EMAIL_HOST_PASSWORD = 'ugnh dgyf hgqv drwv'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 from django.contrib.messages import constants as messages
 MESSAGE_TAGS = {
@@ -193,3 +199,6 @@ LOGGING = {
 
 # Cấu hình cho Gemini API
 GEMINI_API_KEY = 'AIzaSyAKFodtn3H4xhjLb2yRNPmOnVTxlw_zGfo'
+
+SITE_ID = 1
+SITE_DOMAIN = "http://127.0.0.1:8000"
