@@ -1,0 +1,366 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+{# Giữ nguyên toàn bộ phần CSS từ file base của admin #}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+    :root {
+        --sidebar-width: 250px;
+        --navbar-height: 60px;
+        --primary-color: #3498db;
+        --secondary-color: #2c3e50;
+        --light-color: #ecf0f1;
+        --dark-color: #34495e;
+        --success-color: #2ecc71;
+        --danger-color: #e74c3c;
+        --warning-color: #f39c12;
+    }
+    
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f5f5f5;
+    }
+    
+    .sidebar {
+        width: var(--sidebar-width);
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: var(--secondary-color);
+        color: white;
+        transition: all 0.3s;
+        z-index: 1000;
+    }
+    
+    .sidebar-brand {
+        padding: 1.5rem 1rem;
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-align: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .sidebar-nav {
+        padding: 0;
+        list-style: none;
+    }
+    
+    .sidebar-nav-item {
+        position: relative;
+    }
+    
+    .sidebar-nav-link {
+        display: flex;
+        align-items: center;
+        padding: 0.8rem 1rem;
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+    
+    .sidebar-nav-link:hover, 
+    .sidebar-nav-link.active {
+        color: white;
+        background-color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .sidebar-nav-link i {
+        margin-right: 0.5rem;
+        width: 20px;
+        text-align: center;
+    }
+    
+    .sidebar-nav-dropdown {
+        padding-left: 2rem;
+        list-style: none;
+        max-height: 0;
+        overflow: hidden;
+        transition: all 0.3s;
+    }
+    
+    .sidebar-nav-dropdown.show {
+        max-height: 500px;
+    }
+    
+    .sidebar-nav-dropdown-link {
+        display: block;
+        padding: 0.5rem 1rem;
+        color: rgba(255, 255, 255, 0.6);
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+    
+    .sidebar-nav-dropdown-link:hover,
+    .sidebar-nav-dropdown-link.active {
+        color: white;
+    }
+    
+    .main-content {
+        margin-left: var(--sidebar-width);
+        padding-top: var(--navbar-height);
+        min-height: 100vh;
+        transition: all 0.3s;
+    }
+    
+    .navbar {
+        height: var(--navbar-height);
+        position: fixed;
+        top: 0;
+        right: 0;
+        left: var(--sidebar-width);
+        z-index: 1030;
+        background-color: white;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+    
+    .breadcrumb {
+        background-color: transparent;
+        padding: 0;
+    }
+    
+    .card {
+        border: none;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        margin-bottom: 1.5rem;
+    }
+    
+    .card-header {
+        background-color: white;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+        font-weight: bold;
+    }
+    
+    .table th {
+        border-top: none;
+        font-weight: 600;
+    }
+    
+    .status-badge {
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .badge-waiting {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+    
+    .badge-confirmed {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    
+    .badge-checked-in {
+        background-color: #cce5ff;
+        color: #004085;
+    }
+    
+    .badge-checked-out {
+        background-color: #e2e3e5;
+        color: #383d41;
+    }
+    
+    .badge-cancelled {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+    
+    .avatar {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+    
+    .pagination .page-item.active .page-link {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    
+    .pagination .page-link {
+        color: var(--primary-color);
+    }
+    
+    .search-box {
+        max-width: 300px;
+    }
+    
+    .filter-select {
+        max-width: 200px;
+    }
+    
+    .stats-card {
+        border-left: 4px solid;
+        transition: all 0.3s;
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+    
+    .stats-card.primary {
+        border-left-color: var(--primary-color);
+    }
+    
+    .stats-card.success {
+        border-left-color: var(--success-color);
+    }
+    
+    .stats-card.warning {
+        border-left-color: var(--warning-color);
+    }
+    
+    .stats-card.danger {
+        border-left-color: var(--danger-color);
+    }
+    
+    .recent-item {
+        border-left: 3px solid;
+        padding-left: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .recent-item.primary {
+        border-left-color: var(--primary-color);
+    }
+    
+    .recent-item.success {
+        border-left-color: var(--success-color);
+    }
+    
+    .recent-item.warning {
+        border-left-color: var(--warning-color);
+    }
+    
+    .calendar-day {
+        border: 1px solid #dee2e6;
+        height: 120px;
+        overflow-y: auto;
+    }
+    
+    .calendar-day-header {
+        background-color: #f8f9fa;
+        padding: 0.25rem;
+        font-weight: bold;
+        text-align: center;
+    }
+    
+    .shift-morning {
+        background-color: #ffeeba;
+        color: #856404;
+    }
+    
+    .shift-afternoon {
+        background-color: #bee5eb;
+        color: #0c5460;
+    }
+    
+    .shift-evening {
+        background-color: #f5c6cb;
+        color: #721c24;
+    }
+    
+    @media (max-width: 768px) {
+        .sidebar {
+            transform: translateX(-100%);
+        }
+        
+        .sidebar.show {
+            transform: translateX(0);
+        }
+        
+        .main-content {
+            margin-left: 0;
+        }
+        
+        .navbar {
+            left: 0;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="sidebar" style="background-color: #B3DFFF; color: black;">
+    <div class="sidebar-brand">
+        <i class="fas fa-user-tie me-2"></i>
+        <span>Hotel Staff</span>
+    </div>
+    <ul class="sidebar-nav">
+        {# 1. Trang chủ của Nhân viên #}
+        <li class="sidebar-nav-item">
+            <a href="{% url 'nhan_vien_dashboard' %}" class="sidebar-nav-link {% if request.resolver_match.url_name == 'nhan_vien_dashboard' %}active{% endif %}" style="color: black; font-weight: bold;">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Trang chủ</span>
+            </a>
+        </li>
+        
+        {# 2. Quản lý ca làm việc #}
+        <li class="sidebar-nav-item">
+            <a href="{% url 'nhan_vien_schedule_management' %}" class="sidebar-nav-link {% if request.resolver_match.url_name == 'nhan_vien_schedule_management' %}active{% endif %}" style="color: black; font-weight: bold;">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Ca làm việc</span>
+            </a>
+        </li>
+
+        {# 3. Quản lý hỗ trợ & yêu cầu #}
+        <li class="sidebar-nav-item">
+            <a href="{% url 'nhan_vien_request_management' %}" class="sidebar-nav-link {% if request.resolver_match.url_name == 'nhan_vien_request_management' %}active{% endif %}" style="color: black; font-weight: bold;">
+                <i class="fas fa-headset"></i>
+                <span>Quản lý Yêu cầu</span>
+            </a>
+        </li>
+        
+        {# 4. Đăng xuất #}
+        <li class="sidebar-nav-item">
+            <a href="{% url 'logout' %}" class="sidebar-nav-link" style="color: black; font-weight: bold;">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Đăng xuất</span>
+            </a>
+        </li>
+    </ul>
+</div>
+
+<div class="main-content">
+    {# Giữ lại phần Navbar #}
+    <nav class="navbar navbar-expand navbar-light bg-white">
+        <div class="container-fluid">
+            <button class="btn btn-link d-md-none" type="button" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="{% if user.avatar %}{{ user.avatar.url}}{% else %}{% static 'images/default-avartar.jpg' %}{% endif %}" class="avatar me-2" alt="Avatar">
+                        <span class="d-none d-md-inline">{{ request.user.get_full_name|default:request.user.username }}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fas fa-user me-2"></i>Hồ sơ</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container-fluid py-4">
+        {# Block này để các template con của nhân viên chèn nội dung vào #}
+        {% block nhan_vien_content %}
+        {% endblock %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('sidebarToggle').addEventListener('click', function() {
+        document.querySelector('.sidebar').classList.toggle('show');
+    });
+</script>
+{% endblock %}

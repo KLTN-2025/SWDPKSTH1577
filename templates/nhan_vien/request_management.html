@@ -1,0 +1,35 @@
+{% extends 'nhan_vien/base.html' %}
+
+{% block nhan_vien_content %}
+<h2>Các yêu cầu được giao</h2>
+<div class="card">
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Phòng</th>
+                    <th>Loại yêu cầu</th>
+                    <th>Nội dung</th>
+                    <th>Ngày tạo</th>
+                    <th>Tình trạng</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for req in requests %}
+                <tr>
+                    <td>{{ req.phong.ten_p }}</td>
+                    <td>{{ req.get_loai_yc_display }}</td>
+                    <td>{{ req.noi_dung_yc }}</td>
+                    <td>{{ req.ngay_tao|date:"d/m/Y H:i" }}</td>
+                    <td>{{ req.get_tinh_trang_display }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">Bạn không có yêu cầu nào được giao.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

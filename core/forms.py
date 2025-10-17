@@ -236,3 +236,21 @@ class UserProfileForm(forms.ModelForm):
     class Meta:
         model = TaiKhoan
         fields = ['first_name', 'last_name', 'email', 'sdt', 'dia_chi', 'avatar']
+
+class DangKyNhanTinForm(forms.ModelForm):
+    class Meta:
+        model = DangKyNhanTin
+        fields = ['email']
+        widgets = {
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Email của bạn',
+                'aria-label': 'Email của bạn',
+            })
+        }
+        error_messages = {
+            'email': {
+                'unique': "Email này đã được đăng ký trước đó.",
+                'invalid': "Vui lòng nhập một địa chỉ email hợp lệ.",
+            }
+        }

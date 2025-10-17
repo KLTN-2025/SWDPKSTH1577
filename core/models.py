@@ -3,6 +3,8 @@ from django.conf import settings
 from django.core.validators import MinValueValidator
 
 User = settings.AUTH_USER_MODEL
+from django.urls import reverse
+
 
 
 
@@ -32,6 +34,9 @@ class Phong(models.Model):
 
     def __str__(self):
         return f"{self.ten_p} - {self.get_loai_p_display()}"
+
+    def get_absolute_url(self):
+        return reverse('room_detail', kwargs={'pk': self.pk})
     
     @property
     def guest_range(self):
@@ -212,3 +217,15 @@ class HoaDon(models.Model):
 
     def __str__(self):
         return f"Hóa đơn #{self.ma_hd} - {self.don_dat_phong}"
+
+class DangKyNhanTin(models.Model):
+    email = models.EmailField(unique=True, verbose_name="Địa chỉ email")
+    ngay_dang_ky = models.DateTimeField(auto_now_add=True, verbose_name="Ngày đăng ký")
+
+    def __str__(self):
+        return self.email
+
+    class Meta:
+        verbose_name = "Đăng ký nhận tin"
+        verbose_name_plural = "Danh sách đăng ký nhận tin"
+        

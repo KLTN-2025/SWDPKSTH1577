@@ -1,0 +1,75 @@
+{% extends 'nhan_vien/base.html' %}
+
+{% block nhan_vien_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Trang chủ</h1>
+</div>
+
+{% if nhan_vien_profile %}
+    <h4>Chào mừng, {{ nhan_vien_profile.ten_nv }}!</h4>
+{% else %}
+    <h4>Chào mừng, {{ request.user.username }}!</h4>
+{% endif %}
+
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-header">Yêu cầu cần xử lý</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ pending_requests_count }}</h5>
+                <p class="card-text">Tổng số yêu cầu đang chờ và đang thực hiện.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <h2>Lịch làm việc hôm nay</h2>
+        <div class="card">
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for schedule in schedules_today %}
+                        <li class="list-group-item">
+                            <strong>{{ schedule.get_ca_lam_display }}</strong>
+                            {% if schedule.ghi_chu %}<p class="mb-0 text-muted">{{ schedule.ghi_chu }}</p>{% endif %}
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item text-center">Bạn không có ca làm việc nào hôm nay.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <h2>Yêu cầu gần đây</h2>
+        <div class="card">
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Phòng</th>
+                            <th>Nội dung</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for req in recent_requests %}
+                        <tr>
+                            <td>{{ req.phong.ten_p }}</td>
+                            <td>{{ req.noi_dung_yc|truncatewords:5 }}</td>
+                            <td><span class="badge bg-info">{{ req.get_tinh_trang_display }}</span></td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="text-center">Chưa có yêu cầu nào được giao.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

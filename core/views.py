@@ -15,6 +15,13 @@ import time
 from decimal import Decimal
 import json
 from django.conf import settings
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from .forms import DangKyNhanTinForm 
+from .models import DangKyNhanTin 
+import logging
+logger = logging.getLogger(__name__)
 
 timeout = settings.SESSION_COOKIE_AGE
 
@@ -1535,3 +1542,118 @@ def capture_paypal_order(request):
             return JsonResponse({'status': 'error', 'message': 'Lỗi hệ thống.'}, status=500)
 
     return JsonResponse({'status': 'error', 'message': 'Phương thức không hợp lệ.'}, status=405)
+
+
+@login_required
+def nhan_vien_schedule_management(request):
+    """
+    Hiển thị lịch làm việc của nhân viên đang đăng nhập.
+    """
+    try:
+        # Lấy thông tin nhân viên từ tài khoản user đang đăng nhập
+        nhan_vien = NhanVien.objects.get(tai_khoan=request.user)
+        # Lọc lịch làm việc của nhân viên đó
+        schedules = LichLamViec.objects.filter(nhan_vien=nhan_vien).order_by('-ngay_lam')
+    except NhanVien.DoesNotExist:
+        schedules = []
+
+    context = {
+        'schedules': schedules
+    }
+    return render(request, 'nhan_vien/schedule_management.html', context)
+
+@login_required
+def nhan_vien_request_management(request):
+    """
+    Hiển thị các yêu cầu được gán cho nhân viên đang đăng nhập.
+    """
+    try:
+        nhan_vien = NhanVien.objects.get(tai_khoan=request.user)
+        # Lọc các yêu cầu được gán cho nhân viên đó
+        requests = YeuCau.objects.filter(nhan_vien=nhan_vien).order_by('-ngay_tao')
+    except NhanVien.DoesNotExist:
+        requests = []
+
+    context = {
+        'requests': requests
+    }
+    return render(request, 'nhan_vien/request_management.html', context)
+
+
+@login_required
+def nhan_vien_dashboard(request):
+    """
+    View hiển thị trang dashboard cho nhân viên với các thông tin tổng quan.
+    """
+    context = {
+        'schedules_today': [],
+        'pending_requests_count': 0,
+        'recent_requests': [],
+        'nhan_vien_profile': None,
+    }
+
+    try:
+      
+        nhan_vien = NhanVien.objects.get(tai_khoan=request.user)
+        context['nhan_vien_profile'] = nhan_vien
+
+        # 1. Lấy lịch làm việc hôm nay
+        today = timezone.now().date()
+        schedules_today = LichLamViec.objects.filter(nhan_vien=nhan_vien, ngay_lam=today)
+        context['schedules_today'] = schedules_today
+
+        # 2. Đếm số lượng yêu cầu đang chờ ("đã phân công") hoặc đang xử lý
+        pending_statuses = ['da_phan_cong', 'dang_xu_ly']
+        pending_requests_count = YeuCau.objects.filter(
+            nhan_vien=nhan_vien,
+            tinh_trang__in=pending_statuses
+        ).count()
+        context['pending_requests_count'] = pending_requests_count
+
+        # 3. Lấy 5 yêu cầu gần nhất được giao
+        recent_requests = YeuCau.objects.filter(nhan_vien=nhan_vien).order_by('-ngay_tao')[:5]
+        context['recent_requests'] = recent_requests
+
+    except NhanVien.DoesNotExist:
+       
+        pass
+
+    return render(request, 'nhan_vien/dashboard.html', context)
+
+def subscribe_newsletter(request):
+    if request.method == 'POST':
+        form = DangKyNhanTinForm(request.POST)
+        if form.is_valid():
+            form.save()
+            email_address = form.cleaned_data.get('email')
+            
+            try:
+                subject = 'Cảm ơn bạn đã đăng ký nhận tin từ Khách sạn Crowne Plaza!'
+                context = {'email': email_address}
+                html_message = render_to_string('emails/promotion_email.html', context)
+                
+                # --- LOGGING ---
+                logger.info(f"Đang chuẩn bị gửi email chào mừng đến {email_address}...")
+                
+                send_mail(
+                    subject, 
+                    '', 
+                    settings.DEFAULT_FROM_EMAIL, 
+                    [email_address], 
+                    html_message=html_message
+                )
+
+                # --- LOGGING ---
+                logger.info(f"Gửi email chào mừng đến {email_address} THÀNH CÔNG.")
+                messages.success(request, 'Đăng ký thành công! Vui lòng kiểm tra email của bạn.')
+            
+            except Exception as e:
+                # --- LOGGING ---
+                logger.error(f"Gửi email chào mừng đến {email_address} THẤT BẠI. Lỗi: {e}")
+                messages.warning(request, 'Đăng ký thành công, nhưng chúng tôi gặp sự cố khi gửi email cho bạn.')
+
+        else:
+            error_msg = form.errors.get('email')[0] if form.errors.get('email') else "Dữ liệu không hợp lệ."
+            messages.error(request, error_msg)
+            
+    return redirect(request.META.get('HTTP_REFERER', 'home'))

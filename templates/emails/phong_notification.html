@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ tieu_de }}</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f4f4f4; margin: 0; padding: 0; }
+        .wrapper { width: 100%; background-color: #f4f4f4; padding: 20px 0; }
+        .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); overflow: hidden; }
+        .header { background-color: #007bff; color: white; padding: 20px; text-align: center; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .content { padding: 20px 30px; }
+        .content p { margin: 0 0 15px; }
+        .room-card { border: 1px solid #ddd; border-radius: 8px; margin: 20px 0; }
+        .room-card img { max-width: 100%; border-radius: 8px 8px 0 0; }
+        .room-info { padding: 20px; }
+        .room-info h2 { margin-top: 0; color: #007bff; }
+        .button { display: inline-block; background-color: #28a745; color: #ffffff; padding: 12px 25px; text-align: center; text-decoration: none; border-radius: 5px; font-weight: bold; }
+        .footer { text-align: center; font-size: 0.9em; color: #777; padding: 20px; background-color: #f8f9fa; }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="container">
+            <div class="header">
+                <h1>{{ tieu_de_chinh }}</h1>
+            </div>
+            <div class="content">
+                <p>Xin chào quý khách,</p>
+                <p>{{ noi_dung_chinh }}</p>
+
+                <div class="room-card">
+                    
+                    <div class="room-info">
+                        <h2>{{ phong.ten_p }}</h2>
+                        <p><strong>Loại phòng:</strong> {{ phong.get_loai_p_display }}</p>
+                        <p><strong>Giá chỉ từ:</strong> {{ phong.gia|floatformat:"0" }} VNĐ/đêm</p>
+                        <p style="text-align:center; margin-top: 20px;">
+                            <a href="{{ link_chi_tiet }}" class="button">Xem Chi Tiết & Đặt Ngay</a>
+                        </p>
+                    </div>
+                </div>
+
+                <p>Đừng bỏ lỡ cơ hội trải nghiệm dịch vụ tuyệt vời tại khách sạn của chúng tôi. Chúng tôi luôn sẵn sàng phục vụ bạn!</p>
+                <p>Trân trọng,<br>Đội ngũ Khách sạn Crowne Plaza</p>
+            </div>
+            <div class="footer">
+                <p>&copy; 2025 Khách sạn Crowne Plaza. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
