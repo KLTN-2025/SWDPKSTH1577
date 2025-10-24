@@ -6,15 +6,84 @@
 {% endblock %}
 
 {% block admin_content %}
-<div class="card">
+<style>
+    .card {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 6px 24px rgba(0,0,0,0.06);
+        transition: all 0.3s ease;
+    }
+    .card:hover {
+        box-shadow: 0 8px 28px rgba(0,0,0,0.08);
+    }
+    .card-header {
+        background: linear-gradient(90deg, #0061ff 0%, #60efff 100%);
+        color: white;
+        font-weight: 600;
+        padding: 1rem 1.5rem;
+    }
+    .form-label {
+        font-weight: 500;
+        color: #333;
+        margin-bottom: 6px;
+    }
+    input, select, textarea {
+        border-radius: 10px !important;
+        border: 1px solid #d0d7de !important;
+        padding: 10px 12px !important;
+        width: 100%;
+        transition: all 0.2s ease;
+    }
+    input:focus, select:focus, textarea:focus {
+        border-color: #007bff !important;
+        box-shadow: 0 0 0 3px rgba(0,123,255,0.15);
+        outline: none;
+    }
+    .btn-primary {
+        background: linear-gradient(90deg, #0061ff 0%, #60efff 100%);
+        border: none;
+        border-radius: 10px;
+        font-weight: 500;
+        padding: 10px 20px;
+        transition: all 0.25s ease;
+    }
+    .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,97,255,0.3);
+    }
+    .btn-outline-secondary {
+        border-radius: 10px;
+        padding: 10px 20px;
+    }
+    #preview-img {
+        display: none;
+        margin-top: 10px;
+        max-height: 200px;
+        border-radius: 10px;
+        object-fit: cover;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+    .form-section-title {
+        font-weight: 600;
+        font-size: 16px;
+        color: #007bff;
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+        border-bottom: 2px solid #e5e7eb;
+        padding-bottom: 0.3rem;
+    }
+</style>
+
+<div class="card mt-3">
     <div class="card-header">
-        <h5>Chỉnh sửa dịch vụ</h5>
+        <i class="fas fa-concierge-bell me-2"></i>Chỉnh sửa dịch vụ
     </div>
     <div class="card-body">
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="row">
                 <div class="col-md-6">
+                    <div class="form-section-title">Thông tin cơ bản</div>
                     <div class="mb-3">
                         <label class="form-label">Tên dịch vụ</label>
                         {{ form.ten_dv }}
@@ -28,10 +97,18 @@
                         {{ form.hoat_dong }}
                     </div>
                 </div>
+
                 <div class="col-md-6">
+                    <div class="form-section-title">Hình ảnh & mô tả</div>
                     <div class="mb-3">
                         <label class="form-label">Ảnh đại diện</label>
                         {{ form.anh_dai_dien }}
+                        {% if form.anh_dai_dien.value %}
+                            <div class="mt-2">
+                                <img src="{{ form.anh_dai_dien.value.url }}" class="img-thumbnail" width="100" id="current-img">
+                            </div>
+                        {% endif %}
+                        <img id="preview-img" alt="Xem trước ảnh">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Mô tả ngắn</label>
@@ -39,9 +116,29 @@
                     </div>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
-            <a href="{% url 'admin_service_management' %}" class="btn btn-outline-secondary">Hủy bỏ</a>
+
+            <div class="d-flex justify-content-end mt-4">
+                <a href="{% url 'admin_service_management' %}" class="btn btn-outline-secondary me-2">Hủy bỏ</a>
+                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+            </div>
         </form>
     </div>
 </div>
+
+<script>
+    // Preview ảnh khi chọn file mới
+    const input = document.querySelector('input[type="file"][name="anh_dai_dien"]');
+    const preview = document.getElementById('preview-img');
+    if(input){
+        input.addEventListener('change', e=>{
+            const file = e.target.files[0];
+            if(file){
+                preview.src = URL.createObjectURL(file);
+                preview.style.display = 'block';
+            } else {
+                preview.style.display = 'none';
+            }
+        });
+    }
+</script>
 {% endblock %}

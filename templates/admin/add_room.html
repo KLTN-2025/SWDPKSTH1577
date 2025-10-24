@@ -6,9 +6,62 @@
 {% endblock %}
 
 {% block admin_content %}
-<div class="card">
+<style>
+    .card {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    .card:hover {
+        box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+    }
+    .card-header {
+        background: linear-gradient(90deg, #007bff 0%, #00c6ff 100%);
+        color: white;
+        font-weight: 600;
+        font-size: 18px;
+        padding: 1rem 1.5rem;
+    }
+    label.form-label {
+        font-weight: 500;
+        color: #333;
+        margin-bottom: 6px;
+    }
+    input[type="text"], input[type="number"], select, textarea {
+        border-radius: 8px !important;
+        border: 1px solid #ddd !important;
+        padding: 10px 12px !important;
+        width: 100%;
+    }
+    input:focus, select:focus, textarea:focus {
+        border-color: #007bff !important;
+        box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+    }
+    .btn-primary {
+        background: linear-gradient(90deg, #007bff 0%, #00c6ff 100%);
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-weight: 500;
+    }
+    .btn-outline-secondary {
+        border-radius: 8px;
+        padding: 10px 20px;
+    }
+    #preview-img {
+        margin-top: 10px;
+        border-radius: 10px;
+        max-height: 200px;
+        display: none;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+</style>
+
+<div class="card mt-3">
     <div class="card-header">
-        <h5>Thêm phòng mới</h5>
+        <i class="fas fa-plus-circle me-2"></i>Thêm phòng mới
     </div>
     <div class="card-body">
         <form method="post" enctype="multipart/form-data">
@@ -32,6 +85,7 @@
                         {{ form.suc_chua }}
                     </div>
                 </div>
+
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label class="form-label">Trạng thái</label>
@@ -40,12 +94,14 @@
                     <div class="mb-3">
                         <label class="form-label">Ảnh đại diện</label>
                         {{ form.anh_dai_dien }}
+                        <img id="preview-img" alt="Xem trước ảnh">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Tiện ích</label>
                         {{ form.tien_ich }}
                     </div>
                 </div>
+
                 <div class="col-md-12">
                     <div class="mb-3">
                         <label class="form-label">Mô tả</label>
@@ -57,9 +113,29 @@
                     </div>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary">Thêm phòng</button>
-            <a href="{% url 'admin_room_management' %}" class="btn btn-outline-secondary">Hủy bỏ</a>
+
+            <div class="d-flex justify-content-end mt-4">
+                <a href="{% url 'admin_room_management' %}" class="btn btn-outline-secondary me-2">Hủy bỏ</a>
+                <button type="submit" class="btn btn-primary">Thêm phòng</button>
+            </div>
         </form>
     </div>
 </div>
+
+<script>
+    // Xem trước ảnh khi chọn file
+    const input = document.querySelector('input[type="file"][name="anh_dai_dien"]');
+    const preview = document.getElementById('preview-img');
+    if (input) {
+        input.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                preview.src = URL.createObjectURL(file);
+                preview.style.display = 'block';
+            } else {
+                preview.style.display = 'none';
+            }
+        });
+    }
+</script>
 {% endblock %}
