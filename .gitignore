@@ -8,3 +8,8 @@ Thumbs.db
 *.pyo
 db.sqlite3
 debug.log
+media/
+staticfiles/
+*.log
+.env
+static

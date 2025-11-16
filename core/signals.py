@@ -64,7 +64,14 @@ def send_email_on_new_room(sender, instance, created, **kwargs):
 
     logger.info(f"Phát hiện phòng mới: {instance.ten_p}. Kích hoạt gửi email hàng loạt.")
 
-    subscribers = DangKyNhanTin.objects.values_list('email', flat=True)
+    subscribers = DangKyNhanTin.objects.exclude(
+        email__isnull=True
+    ).exclude(
+        email__exact=''
+    ).exclude(
+        email__exact=' '
+    ).values_list('email', flat=True)
+    
     if not subscribers:
         logger.info("Không có người dùng nào đăng ký nhận tin.")
         return

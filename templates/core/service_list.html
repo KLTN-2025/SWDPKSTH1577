@@ -46,7 +46,7 @@
                             <img src="{{ service.anh_dai_dien.url }}" alt="{{ service.ten_dv }}" style="max-height: 50px; max-width: 50px;">
                             {% endif %}
                         </td>
-                        <td>{{ service.phi_dv|floatformat:0 }}</td>
+                        <td class="format-price">{{ service.phi_dv|floatformat:0 }}</td>
                         <td>
                             <a href="{% url 'service_detail' service.ma_dv %}" class="btn btn-sm btn-outline-primary">
                                 <i class="fas fa-info-circle"></i> Chi tiết

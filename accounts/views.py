@@ -98,7 +98,8 @@ def register_view(request):
                 dia_chi=address
             )
 
-            return redirect(f"{reverse('register')}?success=true")
+            messages.success(request, 'Đăng ký thành công! Vui lòng đăng nhập.')
+            return redirect('login')
         except Exception as e:
             messages.error(request, f'Có lỗi xảy ra: {str(e)}')
             return redirect('register')

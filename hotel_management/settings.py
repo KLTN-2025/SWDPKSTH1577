@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'django.contrib.sites',
     'core',
+    # 'crypto_fields',
     'accounts',
     'chatbot',
     
@@ -198,7 +199,10 @@ LOGGING = {
 }
 
 # Cấu hình cho Gemini API
-GEMINI_API_KEY = 'AIzaSyAKFodtn3H4xhjLb2yRNPmOnVTxlw_zGfo'
+GEMINI_API_KEY = 'AIzaSyBBGc33Db_MFovQrvnT1lA72zHV_jnlA-s'
 
 SITE_ID = 1
 SITE_DOMAIN = "http://127.0.0.1:8000"
+
+
+FIELD_ENCRYPTION_KEY = os.environ.get('DJANGO_CRYPTOGRAPHY_KEY', 'euTFWA6eDQekaUiUA+M+TYErhcqDvaEpjoXSyNXvF/U=')

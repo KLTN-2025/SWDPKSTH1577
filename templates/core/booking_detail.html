@@ -36,7 +36,7 @@
                         <p><strong>Ngày nhận phòng:</strong> {{ booking.ngay_nhan|date:"d/m/Y" }}</p>
                         <p><strong>Ngày trả phòng:</strong> {{ booking.ngay_tra|date:"d/m/Y" }}</p>
                         <p><strong>Số người:</strong> {{ booking.so_luong_nguoi }}</p>
-                        <p><strong>Tổng tiền:</strong> {{ booking.gia_ddp|floatformat:0 }} VND</p>
+                        <p><strong>Tổng tiền:</strong><p class="format-price">{{ booking.gia_ddp|floatformat:0 }} VND</p> </p>
                         <p><strong>Trạng thái:</strong> 
                             {% if booking.trang_thai == 'cho_xac_nhan' %}
                             <span class="badge bg-warning">Chờ xác nhận</span>
@@ -83,7 +83,7 @@
                                         <td>{{ service.dich_vu.ten_dv }}</td>
                                         <td>{{ service.ngay_su_dung|date:"d/m/Y" }} {{ service.gio_su_dung|time:"H:i" }}</td>
                                         <td>{{ service.so_luong }}</td>
-                                        <td>{{ service.thanh_tien|floatformat:0 }} VND</td>
+                                        <td class="format-price">{{ service.thanh_tien|floatformat:0 }} VND</td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>

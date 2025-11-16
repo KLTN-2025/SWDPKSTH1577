@@ -227,7 +227,7 @@
                 <div class="card-body">
                     <h5>{{ booking.phong.ten_p }}</h5>
                     <p><strong>Loại phòng:</strong> {{ booking.phong.get_loai_p_display }}</p>
-                    <p><strong>Giá phòng:</strong> {{ booking.phong.gia|floatformat:0 }} VNĐ/ngày</p>
+                    <p><strong>Giá phòng:</strong> <span class="format-price">{{ booking.phong.gia|floatformat:0 }} VNĐ/ngày</span></p>
                     <p><strong>Sức chứa:</strong> {{ booking.phong.suc_chua }} người</p>
                     
                     <h5 class="mt-4">Tiện ích</h5>

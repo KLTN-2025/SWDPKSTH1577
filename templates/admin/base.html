@@ -395,6 +395,7 @@
                         <span class="d-none d-md-inline">{{ request.user.get_full_name|default:request.user.username }}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="{% url 'home' %}"><i class="fas fa-home me-2"></i>Trang chủ</a></li>
                         <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fas fa-user me-2"></i>Hồ sơ</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
