@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 User = settings.AUTH_USER_MODEL
 from django.urls import reverse
@@ -117,6 +117,30 @@ class LichLamViec(models.Model):
     def __str__(self):
         return f"{self.nhan_vien.ten_nv} - {self.ngay_lam} - {self.get_ca_lam_display()}"
 
+
+class MaGiamGia(models.Model):
+    ma_code = models.CharField(max_length=20, unique=True)
+    phan_tram_giam = models.PositiveIntegerField(
+        default=0, 
+        validators=[MaxValueValidator(100)], 
+        help_text="Nhập số % giảm (VD: 10 là 10%)"
+    )
+    so_tien_giam = models.FloatField(default=0, help_text="Giảm số tiền cố định (VNĐ)")
+    ngay_bat_dau = models.DateField()
+    ngay_ket_thuc = models.DateField()
+    so_luong = models.PositiveIntegerField(default=100)
+    trang_thai = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.ma_code
+
+    def is_valid(self):
+        from django.utils import timezone
+        today = timezone.now().date()
+        return (self.trang_thai and 
+                self.so_luong > 0 and 
+                self.ngay_bat_dau <= today <= self.ngay_ket_thuc)
+
 class DonDatPhong(models.Model):
     TRANG_THAI_CHOICES = [
         ('cho_xac_nhan', 'Chờ xác nhận'),
@@ -137,6 +161,14 @@ class DonDatPhong(models.Model):
     ghi_chu = models.TextField(blank=True)
     da_thanh_toan = models.BooleanField(default=False)
     paypal_order_id = models.CharField(max_length=255, blank=True, null=True)
+    ma_giam_gia = models.ForeignKey(MaGiamGia, on_delete=models.SET_NULL, null=True, blank=True)
+    tong_tien_thuc_te = models.FloatField(default=0, help_text="Số tiền sau khi giảm giá")
+
+    def save(self, *args, **kwargs):
+        # Logic tính lại tiền nếu chưa có tong_tien_thuc_te
+        if not self.tong_tien_thuc_te:
+            self.tong_tien_thuc_te = self.gia_ddp
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"Đặt phòng #{self.ma_ddp} - {self.khach_hang.ten_kh}"

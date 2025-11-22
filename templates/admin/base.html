@@ -373,6 +373,21 @@
             </ul>
         </li>
         <li class="sidebar-nav-item">
+            <a href="#promotionManagement" class="sidebar-nav-link {% if 'coupon' in request.resolver_match.url_name %}active{% endif %}" data-bs-toggle="collapse" style="color: black; font-weight: bold;">
+                <i class="fas fa-tags"></i>
+                <span>Quản lý khuyến mãi</span>
+                <i class="fas fa-angle-down ms-auto"></i>
+            </a>
+            <ul id="promotionManagement" class="sidebar-nav-dropdown {% if 'coupon' in request.resolver_match.url_name %}show{% endif %}">
+                <li>
+                    <a href="{% url 'admin_coupon_management' %}" class="sidebar-nav-dropdown-link {% if request.resolver_match.url_name == 'admin_coupon_management' %}active{% endif %}" style="color: black; font-weight: bold;">
+                        Danh sách mã giảm giá
+                    </a>
+                </li>
+                
+            </ul>
+        </li>
+        <li class="sidebar-nav-item">
             <a href="{% url 'logout' %}" class="sidebar-nav-link" style="color: black; font-weight: bold;">
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Đăng xuất</span>

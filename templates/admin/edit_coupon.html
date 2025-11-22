@@ -1,0 +1,22 @@
+{% extends 'admin/base.html' %}
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'admin_coupon_management' %}">Quản lý khuyến mãi</a></li>
+<li class="breadcrumb-item active">Sửa mã</li>
+{% endblock %}
+{% block admin_content %}
+<div class="container">
+    <div class="card shadow">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Chỉnh sửa mã: {{ coupon.ma_code }}</h6>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary">Cập nhật</button>
+                <a href="{% url 'admin_coupon_management' %}" class="btn btn-secondary">Hủy</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

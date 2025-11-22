@@ -1,0 +1,22 @@
+{% extends 'admin/base.html' %}
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'admin_coupon_management' %}">Quản lý khuyến mãi</a></li>
+<li class="breadcrumb-item active">Xóa mã</li>
+{% endblock %}
+{% block admin_content %}
+<div class="container">
+    <div class="card shadow border-danger">
+        <div class="card-header bg-danger text-white">
+            Xác nhận xóa
+        </div>
+        <div class="card-body">
+            <p>Bạn có chắc chắn muốn xóa mã giảm giá <strong>{{ coupon.ma_code }}</strong> không?</p>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Xóa ngay</button>
+                <a href="{% url 'admin_coupon_management' %}" class="btn btn-secondary">Hủy</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

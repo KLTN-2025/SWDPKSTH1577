@@ -45,7 +45,7 @@
                         </div>
                         
                         <h4 class="text-center mb-4">Booking</h4>
-                        <h3 class="text-primary text-center mb-4">{{ room.gia|floatformat:0 }} VND/ngày</h3>
+                        <h3 class="text-primary text-center mb-4 format-price">{{ room.gia|floatformat:0 }} VND/ngày</h3>
                         
                         <button class="btn btn-primary w-100 py-2" data-bs-toggle="modal" data-bs-target="#bookingModal">
                             Đặt phòng ngay
@@ -100,10 +100,39 @@
                                 </select>
                             </div>
                             
-                            <div class="alert alert-info mt-4">
-                                <h6>Bạn sẽ trả: <span id="totalPrice" class="fw-bold">0 VND</span></h6>
-                                <p class="mb-0">Cho <span id="totalNights">0</span> ngày</p>
-                            </div>
+                            <div class="card bg-light border-0 mt-3">
+    <div class="card-body">
+        <label class="form-label fw-bold small">Mã giảm giá (Coupon)</label>
+        <div class="input-group mb-3">
+            <input type="text" id="couponCode" class="form-control" placeholder="Nhập mã khuyến mãi...">
+            <button class="btn btn-outline-primary" type="button" onclick="applyCoupon()">Áp dụng</button>
+        </div>
+        <div id="couponMessage" class="small mb-2"></div>
+
+        <hr>
+
+        <div class="d-flex justify-content-between mb-1">
+            <span>Đơn giá:</span>
+            <span>{{ room.gia|floatformat:0 }} VND/đêm</span>
+        </div>
+        <div class="d-flex justify-content-between mb-1">
+            <span>Số đêm:</span>
+            <span id="totalNights">0</span>
+        </div>
+        <div class="d-flex justify-content-between mb-1">
+            <span>Tạm tính:</span>
+            <span id="subTotal">0 VND</span>
+        </div>
+        <div class="d-flex justify-content-between mb-2 text-success">
+            <span>Giảm giá:</span>
+            <span id="discountAmount" class="fw-bold">- 0 VND</span>
+        </div>
+        <div class="d-flex justify-content-between border-top pt-2">
+            <h6 class="mb-0">Tổng thanh toán:</h6>
+            <h5 class="mb-0 text-primary fw-bold" id="finalPrice">0 VND</h5>
+        </div>
+    </div>
+</div>
                         </div>
                     </div>
                 </div>
@@ -210,28 +239,105 @@
 <script src="https://www.paypal.com/sdk/js?client-id=AUbh_JXsTbSU-qKuw2cR5TMVzTdMcFwFkEg9dTHEApigqGwaBFz1K19mmAMr9GWo-XA7P3sbfphMZZDo&currency=USD"></script>
 
 <script>
-
+let currentTotalVND = 0;
+let currentDiscount = 0;
+let currentFinalPrice = 0;
 function calculateTotal() {
     const checkIn = document.querySelector('input[name="check_in"]');
     const checkOut = document.querySelector('input[name="check_out"]');
     const pricePerNight = parseFloat("{{ room.gia }}");
     
+    
+    resetCoupon(); 
+
     if (checkIn.value && checkOut.value) {
         const dateIn = new Date(checkIn.value);
         const dateOut = new Date(checkOut.value);
         const nights = Math.ceil((dateOut - dateIn) / (86400000)); 
         
         if (nights > 0) {
-            const totalPrice = nights * pricePerNight;
+           
+            currentTotalVND = nights * pricePerNight;
+            currentFinalPrice = currentTotalVND; 
+
+           
             document.getElementById('totalNights').textContent = nights;
-            document.getElementById('totalPrice').textContent = 
-                totalPrice.toLocaleString('vi-VN') + ' VND';
+            document.getElementById('subTotal').textContent = currentTotalVND.toLocaleString('vi-VN') + ' VND';
+            updateFinalPriceUI();
             return;
         }
     }
     
+ 
+    currentTotalVND = 0;
+    currentFinalPrice = 0;
     document.getElementById('totalNights').textContent = '0';
-    document.getElementById('totalPrice').textContent = '0 VND';
+    document.getElementById('subTotal').textContent = '0 VND';
+    updateFinalPriceUI();
+}
+
+function updateFinalPriceUI() {
+    document.getElementById('discountAmount').textContent = '- ' + currentDiscount.toLocaleString('vi-VN') + ' VND';
+    document.getElementById('finalPrice').textContent = currentFinalPrice.toLocaleString('vi-VN') + ' VND';
+}
+
+
+function resetCoupon() {
+    currentDiscount = 0;
+    currentFinalPrice = currentTotalVND;
+    document.getElementById('couponMessage').innerHTML = '';
+    document.getElementById('discountAmount').classList.remove('text-success');
+    updateFinalPriceUI();
+}
+
+
+function applyCoupon() {
+    const code = document.getElementById('couponCode').value.trim();
+    const messageEl = document.getElementById('couponMessage');
+
+    if (!code) {
+        messageEl.innerHTML = '<span class="text-danger">Vui lòng nhập mã giảm giá.</span>';
+        return;
+    }
+
+    if (currentTotalVND === 0) {
+        messageEl.innerHTML = '<span class="text-danger">Vui lòng chọn ngày nhận/trả phòng trước.</span>';
+        return;
+    }
+
+   
+    const formData = new FormData();
+    formData.append('coupon_code', code);
+    formData.append('total_amount', currentTotalVND);
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+
+   
+    fetch("{% url 'check_coupon' %}", {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+          
+            currentDiscount = data.discount_amount;
+            currentFinalPrice = data.new_total;
+            
+            messageEl.innerHTML = `<span class="text-success"><i class="fas fa-check-circle"></i> ${data.message}</span>`;
+            updateFinalPriceUI();
+        } else {
+          
+            resetCoupon();
+            messageEl.innerHTML = `<span class="text-danger"><i class="fas fa-times-circle"></i> ${data.message}</span>`;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        messageEl.innerHTML = '<span class="text-danger">Có lỗi xảy ra. Vui lòng thử lại.</span>';
+    });
 }
 
 function validateDates() {
@@ -256,71 +362,50 @@ function validateDates() {
 
 
 function renderPaypalButton() {
-    const roomPrice = parseFloat("{{ room.gia }}");
-    const nights = Math.ceil((new Date(document.getElementById('finalCheckOut').value) - new Date(document.getElementById('finalCheckIn').value)) / (86400000));
-    const totalVND = nights * roomPrice;
+    
+    const tempBookingData = JSON.parse(localStorage.getItem('temp_booking_data'));
+    
+    if (!tempBookingData) return;
+
+   
+    const totalVND = tempBookingData.total_vnd; 
     const exchangeRate = 26000;
     const totalUSD = (totalVND / exchangeRate).toFixed(2);
 
-    const tempBookingData = JSON.parse(localStorage.getItem('temp_booking_data'));
-    if (!tempBookingData) {
-        alert('Lỗi: Không tìm thấy dữ liệu đặt phòng. Vui lòng thử lại.');
-        return;
-    }
-
+    
+    document.getElementById('paypal-button-container').innerHTML = '';
 
     paypal.Buttons({
         createOrder: function(data, actions) {
-            // Gửi dữ liệu đặt phòng cùng với request tạo đơn hàng
             return fetch('{% url "create_paypal_order" %}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
                 },
-                body: JSON.stringify(tempBookingData) // Gửi dữ liệu đặt phòng
-            }).then(response => {
-                if (!response.ok) {
-                    return response.json().then(error => {
-                        throw new Error(error.message);
-                    });
-                }
-                return response.json();
-            }).then(order => {
-                // Kiểm tra orderID hợp lệ trước khi trả về
-                if (!order || !order.orderID) {
-                    throw new Error('Không nhận được Order ID từ PayPal.');
-                }
-                return order.orderID;
-            }).catch(error => {
-                console.error('Lỗi khi tạo đơn hàng PayPal:', error);
-                alert('Lỗi: ' + error.message);
-            });
+                
+                body: JSON.stringify(tempBookingData) 
+            }).then(res => {
+                 if (!res.ok) return res.json().then(err => { throw new Error(err.message); });
+                 return res.json();
+            }).then(order => order.orderID)
+            .catch(err => alert('Lỗi PayPal: ' + err.message));
         },
         onApprove: function(data, actions) {
-            // Sau khi người dùng chấp thuận, gọi API backend để xác thực
-            return fetch('{% url "capture_paypal_order" %}', {
+             return fetch('{% url "capture_paypal_order" %}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
                 },
                 body: JSON.stringify({ orderID: data.orderID })
-            }).then(response => response.json())
-              .then(data => {
+            }).then(res => res.json())
+            .then(data => {
                 if (data.status === 'success') {
-                    // Hiển thị modal thành công và chuyển hướng
-                    const successModal = new bootstrap.Modal(document.getElementById('successModal'));
-                    document.getElementById('bookingDetailLink').href = data.redirect_url;
-                    successModal.show();
-                    startCountdown(20, data.redirect_url);
-                    $('#customerInfoModal').modal('hide');
+                    window.location.href = data.redirect_url;
                 } else {
-                    throw new Error(data.message || 'Thanh toán không thành công');
+                    alert('Thanh toán thất bại.');
                 }
-            }).catch(error => {
-                console.error('Lỗi khi xử lý thanh toán:', error);
-                alert('Thanh toán thất bại. Vui lòng thử lại.');
             });
         }
     }).render('#paypal-button-container');
@@ -339,43 +424,42 @@ function nextStep() {
         check_in: checkInInput.value,
         check_out: checkOutInput.value,
         guests: document.querySelector('select[name="guests"]').value,
-        room_id: "{{ room.ma_p }}"
+        room_id: "{{ room.ma_p }}",
+       
+        total_vnd: currentFinalPrice, 
+        original_price: currentTotalVND,
+        discount: currentDiscount
     };
-    
+
+   
     const dateIn = new Date(bookingData.check_in);
     const dateOut = new Date(bookingData.check_out);
-    const nights = Math.ceil((dateOut - dateIn) / (86400000)); 
+    const nights = Math.ceil((dateOut - dateIn) / (86400000));
     
     if (nights <= 0) {
         alert('Ngày trả phòng phải sau ngày nhận phòng.');
         return;
     }
 
-   
-    const roomPrice = parseFloat("{{ room.gia }}");
-    const totalVND = nights * roomPrice;
-    bookingData.total_vnd = totalVND;
-
     localStorage.setItem('temp_booking_data', JSON.stringify(bookingData));
     
+   
     const formData = new FormData();
     formData.append('check_in', bookingData.check_in);
     formData.append('check_out', bookingData.check_out);
     formData.append('guests', bookingData.guests);
-    formData.append('total_vnd', totalVND); 
     formData.append('step', '1');
     formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
 
     fetch("{% url 'room_detail' room.ma_p %}", {
         method: 'POST',
         body: formData,
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        }
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
     })
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
+           
             document.getElementById('finalCheckIn').value = bookingData.check_in;
             document.getElementById('finalCheckOut').value = bookingData.check_out;
             document.getElementById('finalGuests').value = bookingData.guests;
@@ -384,19 +468,14 @@ function nextStep() {
             $('#customerInfoModal').modal('show');
             
            
-            if (totalVND > 0) {
-                renderPaypalButton();
-            } else {
-                alert('Có lỗi xảy ra khi tính tổng tiền. Vui lòng thử lại.');
+            if (currentFinalPrice > 0) {
+                renderPaypalButton(); 
             }
         } else {
-            throw new Error(data.message || 'Lỗi khi lưu thông tin đặt phòng');
+             alert(data.message);
         }
     })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Lỗi: ' + error.message);
-    });
+    .catch(error => console.error(error));
 }
 
 

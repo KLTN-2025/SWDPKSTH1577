@@ -880,6 +880,20 @@ class RoomDetailView(View):
                         'status': 'error',
                         'message': 'Ngày trả phòng phải sau ngày nhận phòng'
                     }, status=400)
+                total_vnd = room.gia * (date_out - date_in).days
+                coupon_data = request.session.get('coupon_data')
+                coupon_obj = None
+                final_price = total_vnd
+
+                if coupon_data:
+                    try:
+                        coupon_obj = MaGiamGia.objects.get(id=coupon_data['coupon_id'])
+                        if coupon_obj.is_valid():
+                            final_price = final_price - coupon_data['discount_amount']
+                            coupon_obj.so_luong -= 1
+                            coupon_obj.save()
+                    except MaGiamGia.DoesNotExist:
+                        pass
                 
                 
                 booking = DonDatPhong.objects.create(
@@ -888,9 +902,13 @@ class RoomDetailView(View):
                     ngay_tra=date_out,
                     so_luong_nguoi=guests,
                     khach_hang=request.user.khachhang,
-                    gia_ddp=room.gia * (date_out - date_in).days,
-                    trang_thai='cho_xac_nhan'
+                    gia_ddp=total_vnd,
+                    tong_tien_thuc_te=final_price,
+                    ma_giam_gia=coupon_obj,
+                    trang_thai='cho_xac_nhan',
                 )
+                if 'coupon_data' in request.session:
+                    del request.session['coupon_data']
                 
             
                 del request.session['booking_data']
@@ -1511,19 +1529,39 @@ def capture_paypal_order(request):
                     date_in = datetime.strptime(booking_data['check_in'], '%Y-%m-%d').date()
                     date_out = datetime.strptime(booking_data['check_out'], '%Y-%m-%d').date()
 
+                    total_vnd = room.gia * (date_out - date_in).days
+                    final_price = total_vnd
+                    
+                    coupon_data = request.session.get('coupon_data')
+                    coupon_obj = None
+
+                    if coupon_data:
+                        try:
+                            coupon_obj = MaGiamGia.objects.get(id=coupon_data['coupon_id'])
+                            if coupon_obj.is_valid():
+                                final_price = final_price - coupon_data['discount_amount']
+                              
+                                coupon_obj.so_luong -= 1
+                                coupon_obj.save()
+                        except MaGiamGia.DoesNotExist:
+                            pass
+
                     booking = DonDatPhong.objects.create(
                         phong=room,
                         ngay_nhan=date_in,
                         ngay_tra=date_out,
                         so_luong_nguoi=booking_data['guests'],
                         khach_hang=request.user.khachhang,
-                        gia_ddp=room.gia * (date_out - date_in).days,
+                        gia_ddp=total_vnd,              # Giá gốc
+                        tong_tien_thuc_te=final_price,  # Giá sau giảm
+                        ma_giam_gia=coupon_obj,         # Mã coupon
                         trang_thai='da_xac_nhan', 
                         da_thanh_toan=True,
                         paypal_order_id=order_id
                     )
                     
-                    
+                    if 'coupon_data' in request.session:
+                        del request.session['coupon_data']
                     del request.session['booking_data']
 
                     return JsonResponse({
@@ -1657,3 +1695,112 @@ def subscribe_newsletter(request):
             messages.error(request, error_msg)
             
     return redirect(request.META.get('HTTP_REFERER', 'home'))
+
+
+
+def check_coupon(request):
+    if request.method == 'POST':
+        code = request.POST.get('coupon_code')
+        total_amount = float(request.POST.get('total_amount', 0))
+        
+        try:
+            coupon = MaGiamGia.objects.get(ma_code=code)
+            if coupon.is_valid():
+                discount_amount = 0
+                if coupon.phan_tram_giam > 0:
+                    discount_amount = total_amount * (coupon.phan_tram_giam / 100)
+                elif coupon.so_tien_giam > 0:
+                    discount_amount = coupon.so_tien_giam
+                
+                
+                discount_amount = min(discount_amount, total_amount)
+                final_total = total_amount - discount_amount
+
+               
+                request.session['coupon_data'] = {
+                    'code': code,
+                    'discount_amount': discount_amount,
+                    'coupon_id': coupon.id
+                }
+                
+                return JsonResponse({
+                    'status': 'success',
+                    'message': f'Đã áp dụng mã giảm {discount_amount:,.0f} VNĐ',
+                    'new_total': final_total,
+                    'discount_amount': discount_amount
+                })
+            else:
+                return JsonResponse({'status': 'error', 'message': 'Mã giảm giá đã hết hạn hoặc hết lượt dùng'})
+        except MaGiamGia.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Mã giảm giá không tồn tại'})
+            
+    return JsonResponse({'status': 'error', 'message': 'Yêu cầu không hợp lệ'})
+
+
+
+@login_required
+@user_passes_test(is_admin)
+def admin_coupon_management(request):
+    coupons = MaGiamGia.objects.all().order_by('-id')
+    
+   
+    search_query = request.GET.get('search', '')
+    status = request.GET.get('status', '')
+    
+    if search_query:
+        coupons = coupons.filter(ma_code__icontains=search_query)
+    
+    if status == 'active':
+        coupons = coupons.filter(trang_thai=True)
+    elif status == 'inactive':
+        coupons = coupons.filter(trang_thai=False)
+
+   
+    paginator = Paginator(coupons, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+   
+    if request.method == 'POST':
+        form = MaGiamGiaForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Đã tạo mã giảm giá mới")
+            return redirect('admin_coupon_management')
+        else:
+            messages.error(request, "Lỗi khi tạo mã. Vui lòng kiểm tra lại.")
+    else:
+        form = MaGiamGiaForm()
+
+    context = {
+        'page_obj': page_obj,
+        'form': form,
+        'search_query': search_query,
+        'status': status
+    }
+    return render(request, 'admin/coupon_management.html', context)
+
+@login_required
+@user_passes_test(is_admin)
+def edit_coupon(request, pk):
+    coupon = get_object_or_404(MaGiamGia, pk=pk)
+    if request.method == 'POST':
+        form = MaGiamGiaForm(request.POST, instance=coupon)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Đã cập nhật mã giảm giá")
+            return redirect('admin_coupon_management')
+    else:
+        form = MaGiamGiaForm(instance=coupon)
+    
+    return render(request, 'admin/edit_coupon.html', {'form': form, 'coupon': coupon})
+
+@login_required
+@user_passes_test(is_admin)
+def delete_coupon(request, pk):
+    coupon = get_object_or_404(MaGiamGia, pk=pk)
+    if request.method == 'POST':
+        coupon.delete()
+        messages.success(request, "Đã xóa mã giảm giá")
+        return redirect('admin_coupon_management')
+    return render(request, 'admin/delete_coupon.html', {'coupon': coupon})

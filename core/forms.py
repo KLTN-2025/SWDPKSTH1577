@@ -254,3 +254,27 @@ class DangKyNhanTinForm(forms.ModelForm):
                 'invalid': "Vui lòng nhập một địa chỉ email hợp lệ.",
             }
         }
+        
+        
+
+class MaGiamGiaForm(forms.ModelForm):
+    class Meta:
+        model = MaGiamGia
+        fields = '__all__'
+        widgets = {
+            'ngay_bat_dau': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'ngay_ket_thuc': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'ma_code': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'VD: SALE2024'}),
+            'phan_tram_giam': forms.NumberInput(attrs={'class': 'form-control', 'min': 0, 'max': 100}),
+            'so_tien_giam': forms.NumberInput(attrs={'class': 'form-control', 'min': 0}),
+            'so_luong': forms.NumberInput(attrs={'class': 'form-control', 'min': 0}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        start = cleaned_data.get('ngay_bat_dau')
+        end = cleaned_data.get('ngay_ket_thuc')
+        
+        if start and end and start > end:
+            raise forms.ValidationError("Ngày kết thúc phải sau ngày bắt đầu.")
+        return cleaned_data

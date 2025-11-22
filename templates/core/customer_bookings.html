@@ -98,7 +98,21 @@
                         </td>
                         
                         
-                        <td class="text-nowrap format-price">{{ booking.gia_ddp|floatformat:0 }} VND</td>
+                        <td class="text-nowrap">
+    {% if booking.ma_giam_gia %}
+        <div style="text-decoration: line-through; color: #999; font-size: 0.9em;">
+            {{ booking.gia_ddp|floatformat:0 }} VND
+        </div>
+        <div class="fw-bold text-primary format-price">
+            {{ booking.tong_tien_thuc_te|floatformat:0 }} VND
+        </div>
+        <span class="badge bg-success" style="font-size: 0.7em;">
+            <i class="fas fa-tag"></i> {{ booking.ma_giam_gia.ma_code }}
+        </span>
+    {% else %}
+        <div class="format-price">{{ booking.gia_ddp|floatformat:0 }} VND</div>
+    {% endif %}
+</td>
                         
                         
                         <td>
