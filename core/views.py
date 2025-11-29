@@ -20,6 +20,7 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from .forms import DangKyNhanTinForm 
 from .models import DangKyNhanTin 
+from django.db.models import Avg, Count
 import logging
 logger = logging.getLogger(__name__)
 
@@ -802,9 +803,17 @@ from django.views import View
 class RoomDetailView(View):
     def get(self, request, pk):
         room = get_object_or_404(Phong, pk=pk)
+        reviews = DanhGia.objects.filter(phong=room, hien_thi=True).order_by('-ngay_tao')
+        avg_rating = reviews.aggregate(Avg('diem_so'))['diem_so__avg']
+        avg_rating = round(avg_rating, 1) if avg_rating else 0
+        review_count = reviews.count()
+        
         context = {
             'room': room,
             'booking_success': False,
+            'reviews': reviews,
+            'avg_rating': avg_rating,
+            'review_count': review_count,
         }
         return render(request, 'core/room_detail.html', context)
     def post(self, request, pk):
@@ -1804,3 +1813,83 @@ def delete_coupon(request, pk):
         messages.success(request, "Đã xóa mã giảm giá")
         return redirect('admin_coupon_management')
     return render(request, 'admin/delete_coupon.html', {'coupon': coupon})
+
+
+
+
+
+@login_required
+def submit_review(request, booking_id):
+    booking = get_object_or_404(DonDatPhong, pk=booking_id)
+
+    if booking.khach_hang.tai_khoan != request.user:
+        messages.error(request, "Bạn không có quyền đánh giá đơn này.")
+        return redirect('home')
+    
+    if booking.trang_thai != 'da_checkout':
+        messages.error(request, "Bạn chỉ có thể đánh giá sau khi đã trả phòng.")
+        return redirect('customer_bookings')
+
+    if hasattr(booking, 'danhgia'):
+        messages.warning(request, "Bạn đã đánh giá cho lần lưu trú này rồi.")
+        return redirect('customer_bookings')
+
+    if request.method == 'POST':
+        form = DanhGiaForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.don_dat_phong = booking
+            review.phong = booking.phong
+            review.khach_hang = booking.khach_hang
+            review.save()
+            messages.success(request, "Cảm ơn bạn đã đánh giá!")
+            return redirect('room_detail', pk=booking.phong.pk)
+    else:
+        form = DanhGiaForm()
+
+    return render(request, 'core/submit_review.html', {'form': form, 'booking': booking})
+
+
+
+@login_required
+@user_passes_test(is_admin)
+def admin_review_management(request):
+    reviews = DanhGia.objects.all().order_by('-ngay_tao')
+    
+    # Filter
+    search_query = request.GET.get('search', '')
+    room_filter = request.GET.get('room', '')
+    
+    if search_query:
+        reviews = reviews.filter(
+            Q(khach_hang__ten_kh__icontains=search_query) |
+            Q(binh_luan__icontains=search_query)
+        )
+    
+    if room_filter:
+        reviews = reviews.filter(phong__id=room_filter)
+
+    paginator = Paginator(reviews, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    all_rooms = Phong.objects.all()
+
+    context = {
+        'page_obj': page_obj,
+        'all_rooms': all_rooms,
+        'search_query': search_query,
+        'room_filter': room_filter
+    }
+    return render(request, 'admin/review_management.html', context)
+
+@login_required
+@user_passes_test(is_admin)
+def delete_review(request, pk):
+    review = get_object_or_404(DanhGia, pk=pk)
+    if request.method == 'POST':
+        review.delete()
+        messages.success(request, "Đã xóa đánh giá")
+        return redirect('admin_review_management')
+    return render(request, 'admin/delete_review.html', {'review': review})
+

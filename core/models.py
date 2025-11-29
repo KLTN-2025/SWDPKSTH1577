@@ -261,3 +261,17 @@ class DangKyNhanTin(models.Model):
         verbose_name = "Đăng ký nhận tin"
         verbose_name_plural = "Danh sách đăng ký nhận tin"
         
+        
+class DanhGia(models.Model):
+    ma_dg = models.AutoField(primary_key=True)
+    don_dat_phong = models.OneToOneField(DonDatPhong, on_delete=models.CASCADE)
+    phong = models.ForeignKey(Phong, on_delete=models.CASCADE)
+    khach_hang = models.ForeignKey(KhachHang, on_delete=models.CASCADE)
+    diem_so = models.PositiveIntegerField(default=5, validators=[MinValueValidator(1), MaxValueValidator(5)])
+    binh_luan = models.TextField()
+    ngay_tao = models.DateTimeField(auto_now_add=True)
+    hien_thi = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"Đánh giá {self.diem_so} sao - {self.phong.ten_p}"
+        

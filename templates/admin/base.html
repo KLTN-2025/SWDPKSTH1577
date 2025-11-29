@@ -354,6 +354,12 @@
             </a>
         </li>
         <li class="sidebar-nav-item">
+            <a href="{% url 'admin_review_management' %}" class="sidebar-nav-link {% if request.resolver_match.url_name == 'admin_review_management' %}active{% endif %}" style="color: black; font-weight: bold;">
+                <i class="fas fa-star"></i>
+                <span>Quản lý đánh giá</span>
+            </a>
+        </li>
+        <li class="sidebar-nav-item">
             <a href="#serviceManagement" class="sidebar-nav-link {% if 'service' in request.resolver_match.url_name %}active{% endif %}" data-bs-toggle="collapse" style="color: black; font-weight: bold;">
                 <i class="fas fa-concierge-bell"></i>
                 <span>Quản lý dịch vụ</span>

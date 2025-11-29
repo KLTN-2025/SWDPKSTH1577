@@ -47,6 +47,7 @@
                         <th>Lượt thích</th>
                         <th>Trạng thái</th>
                         <th>Thao tác</th>
+                        <th>Đánh giá</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -151,6 +152,17 @@
                                 <i class="fas fa-info-circle"></i>
                             </a>
                         </td>
+                         <td>
+                            {% if booking.trang_thai == 'da_checkout' %}
+                                {% if not booking.danhgia %}
+                            <a href="{% url 'submit_review' booking.ma_ddp %}" class="btn btn-sm btn-outline-warning">
+                                <i class="fas fa-star"></i> Đánh giá
+                            </a>
+                            {% else %}
+                            <span class="badge bg-success">Đã đánh giá</span>
+                            {% endif %}
+                            {% endif %}
+                            </td>
                     </tr>
                     {% endfor %}
                 </tbody>

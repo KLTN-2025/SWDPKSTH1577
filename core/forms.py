@@ -278,3 +278,16 @@ class MaGiamGiaForm(forms.ModelForm):
         if start and end and start > end:
             raise forms.ValidationError("Ngày kết thúc phải sau ngày bắt đầu.")
         return cleaned_data
+    
+    
+    
+    
+    
+class DanhGiaForm(forms.ModelForm):
+    class Meta:
+        model = DanhGia
+        fields = ['diem_so', 'binh_luan']
+        widgets = {
+            'binh_luan': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Chia sẻ trải nghiệm của bạn...'}),
+            'diem_so': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'max': 5}),
+        }

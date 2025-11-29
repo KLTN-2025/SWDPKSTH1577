@@ -51,6 +51,7 @@ urlpatterns = [
     path('bookings/<int:pk>/', core_views.booking_detail, name='booking_detail'),
     path('bookings/<int:booking_pk>/request/', core_views.create_request, name='create_request'),
     path('check-coupon/', core_views.check_coupon, name='check_coupon'),
+    path('bookings/<int:booking_id>/review/', core_views.submit_review, name='submit_review'),
     
     # Admin URLs
     path('admin-dashboard/', core_views.admin_dashboard, name='admin_dashboard'),
@@ -82,6 +83,8 @@ urlpatterns = [
     path('admin-dashboard/coupons/', core_views.admin_coupon_management, name='admin_coupon_management'),
     path('admin-dashboard/coupons/<int:pk>/edit/', core_views.edit_coupon, name='edit_coupon'),
     path('admin-dashboard/coupons/<int:pk>/delete/', core_views.delete_coupon, name='delete_coupon'),
+    path('admin-dashboard/reviews/', core_views.admin_review_management, name='admin_review_management'),
+    path('admin-dashboard/reviews/<int:pk>/delete/', core_views.delete_review, name='delete_review'),
     path('chatbot/', include('chatbot.urls')),
     path('api/hot-rooms/', core_views.get_hot_rooms, name='hot_rooms_api'),
     path('create-paypal-order/', core_views.create_paypal_order, name='create_paypal_order'),

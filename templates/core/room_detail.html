@@ -32,7 +32,7 @@
             
             
             <div class="col-lg-4">
-                <div class="card border-0 shadow-sm sticky-top" style="top: 20px;">
+                <div class="card border-0 shadow-sm sticky-top" style="top: 100px; z-index: 900;">
                     <div class="card-body">
                         
                         <div class="row g-2 mb-4">
@@ -53,6 +53,44 @@
                     </div>
                 </div>
             </div>
+
+                        <div class="card border-0 shadow-sm mt-4 mb-4">
+    <div class="card-body">
+        <h4 class="mb-4">
+            Đánh giá từ khách hàng 
+            <span class="badge bg-warning text-dark">
+                <i class="fas fa-star"></i> {{ avg_rating }}/5
+            </span>
+            <small class="text-muted fs-6">({{ review_count }} đánh giá)</small>
+        </h4>
+        
+        {% if reviews %}
+            {% for review in reviews %}
+            <div class="d-flex mb-3 border-bottom pb-3">
+                <img src="{% if review.khach_hang.anh_dai_dien %}{{ review.khach_hang.anh_dai_dien.url }}{% else %}{% static 'images/default-avatar.jpg' %}{% endif %}" 
+                     class="rounded-circle me-3" width="50" height="50" style="object-fit: cover;">
+                <div>
+                    <h6 class="mb-1 fw-bold">{{ review.khach_hang.ten_kh }}</h6>
+                    <div class="text-warning mb-1">
+                        {% for i in "12345"|make_list %}
+                            {% if forloop.counter <= review.diem_so %}
+                                <i class="fas fa-star"></i>
+                            {% else %}
+                                <i class="far fa-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <p class="mb-1">{{ review.binh_luan }}</p>
+                    <small class="text-muted">{{ review.ngay_tao|date:"d/m/Y H:i" }} | Đã ở phòng: {{ review.don_dat_phong.phong.ten_p }}</small>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-center text-muted">Chưa có đánh giá nào cho phòng này.</p>
+        {% endif %}
+    </div>
+</div>
+
         </div>
     </div>
 </section>
@@ -402,7 +440,12 @@ function renderPaypalButton() {
             }).then(res => res.json())
             .then(data => {
                 if (data.status === 'success') {
-                    window.location.href = data.redirect_url;
+                    localStorage.removeItem('temp_booking_data');
+                    $('#customerInfoModal').modal('hide');
+                    document.getElementById('bookingDetailLink').href = data.redirect_url;
+                    const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                    successModal.show();
+                    startCountdown(20, data.redirect_url);
                 } else {
                     alert('Thanh toán thất bại.');
                 }
