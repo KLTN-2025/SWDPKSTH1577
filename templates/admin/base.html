@@ -294,7 +294,7 @@
         <li class="sidebar-nav-item">
             <a href="{% url 'admin_dashboard' %}" class="sidebar-nav-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}" style="color: black; font-weight: bold;">
                 <i class="fas fa-tachometer-alt"></i>
-                <span >Trang chủ</span>
+                <span >Tổng quan</span>
             </a>
         </li>
         <li class="sidebar-nav-item">
@@ -315,6 +315,12 @@
                     </a>
                 </li>
             </ul>
+        </li>
+        <li class="sidebar-nav-item">
+        <a href="{% url 'admin_invoice_management' %}" class="sidebar-nav-link {% if 'invoice' in request.resolver_match.url_name %}active{% endif %}" style="color: black; font-weight: bold;">
+            <i class="fas fa-file-invoice-dollar"></i>
+        <span>Quản lý hóa đơn</span>
+        </a>
         </li>
         <li class="sidebar-nav-item">
             <a href="{% url 'admin_customer_management' %}" class="sidebar-nav-link {% if request.resolver_match.url_name == 'admin_customer_management' %}active{% endif %}" style="color: black; font-weight: bold;">
@@ -344,15 +350,10 @@
         <li class="sidebar-nav-item">
             <a href="{% url 'admin_request_management' %}" class="sidebar-nav-link {% if request.resolver_match.url_name == 'admin_request_management' %}active{% endif %}" style="color: black; font-weight: bold;">
                 <i class="fas fa-headset"></i>
-                <span>Quản lý hỗ trợ & phản hồi</span>
+                <span>Quản lý yêu cầu hỗ trợ </span>
             </a>
         </li>
-        <li class="sidebar-nav-item">
-            <a href="{% url 'admin_feedback_management' %}" class="sidebar-nav-link {% if request.resolver_match.url_name == 'admin_feedback_management' %}active{% endif %}" style="color: black; font-weight: bold;">
-                <i class="fas fa-comment-alt"></i>
-                <span>Phản hồi khách hàng</span>
-            </a>
-        </li>
+        
         <li class="sidebar-nav-item">
             <a href="{% url 'admin_review_management' %}" class="sidebar-nav-link {% if request.resolver_match.url_name == 'admin_review_management' %}active{% endif %}" style="color: black; font-weight: bold;">
                 <i class="fas fa-star"></i>

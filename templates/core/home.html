@@ -1,348 +1,607 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
-{% block main_content %}
+{% block extra_css %}
+   
+    {{ block.super }}
 
-<section class="py-5">
-    <div class="container">
-        <div class="row align-items-center">
-            
-            <div class="col-lg-6 mb-4 mb-lg-0">
-                <h1 class="display-4 fw-bold mb-4">Chào mừng đến với CrownePlaza</h1>
-                <p class="lead text-muted mb-4">Trải nghiệm sự sang trọng và tiện nghi đẳng cấp tại không gian nghỉ dưỡng tuyệt vời của chúng tôi. Với dịch vụ 5 sao và tiện nghi hiện đại, chúng tôi cam kết mang đến cho bạn kỳ nghỉ hoàn hảo nhất.</p>
-                
-                <div class="d-flex flex-wrap gap-3">
-                    <a href="{% url 'room_search' %}" class="btn btn-primary btn-lg px-4">
-                        <i class="fas fa-calendar-check me-2"></i> Đặt phòng ngay
-                    </a>
-                    <a href="#services" class="btn btn-outline-secondary btn-lg px-4">
-                        <i class="fas fa-concierge-bell me-2"></i> Khám phá dịch vụ
-                    </a>
-                </div>
-            </div>
-            
-            
-            <div class="col-lg-6">
-                <div class="position-relative">
-                    <img src="{% static 'images/hotel_banner.jpg' %}" 
-                         class="img-fluid shadow-lg" 
-                         alt="Luxury Hotel"
-                         style="max-height: 400px; width: 100%; object-fit: cover; border-radius: 90px 15px 15px 15px;">
-                    <div class="position-absolute bottom-0 end-0 bg-white p-3  shadow-sm" style="border-radius: 15px 0px 0px 0px;">
-                        <div class="d-flex align-items-center">
-                            <div class="me-3">
-                                <i class="fas fa-star text-warning fs-4"></i>
-                            </div>
-                            <div>
-                                <h5 class="mb-0">Đánh giá 5 sao</h5>
-                                <small class="text-muted">Trên 500+ đánh giá</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
+    <style>
+      
+        :root {
+            --lux-gold: #c5a880;
+            --lux-gold-hover: #b09060;
+            --lux-dark: #101820;
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Plus Jakarta Sans', sans-serif;
+        }
 
-<section id="search" class="py-5" >
-    <div class="container" >
-        <div class="search-box" style="background-color: #EAF1FF; border-radius: 30px;">
-            
-            <div class="d-flex justify-content-center">
-            <form method="post" action="{% url 'room_search' %}" class="w-100" style="max-width: 900px;">
-                {% csrf_token %}
-                <div class="row g-3">
-                    <!-- <div class="col-md-3">
-                        <label for="check_in" class="form-label">Ngày nhận phòng</label>
-                        <input type="date" class="form-control" id="check_in" name="check_in" required>
-                    </div>
-                    <div class="col-md-3">
-                        <label for="check_out" class="form-label">Ngày trả phòng</label>
-                        <input type="date" class="form-control" id="check_out" name="check_out" required>
-                    </div> -->
-                    <div class="col-md-2">
-                        <label for="guests" class="form-label">Số người</label>
-                        <select class="form-select" id="guests" name="guests">
-                            <option value="1">1 người</option>
-                            <option value="2" selected>2 người</option>
-                            <option value="3">3 người</option>
-                            <option value="4">4 người</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <label for="room_type" class="form-label">Loại phòng</label>
-                        <select class="form-select" id="room_type" name="room_type">
-                            <option value="">Tất cả</option>
-                            <option value="standard">Standard</option>
-                            <option value="deluxe">Deluxe</option>
-                            <option value="suite">Suite</option>
-                            <option value="family">Gia đình</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2 d-flex align-items-end">
-                        <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
-                    </div>
-                </div>
-            </form>
-            </div>
-        </div>
-    </div>
-</section>
+        .luxury-content-wrapper {
+            font-family: var(--font-body);
+            color: #4a4a4a;
+            background-color: #fff;
+        }
 
+        .luxury-content-wrapper h1, 
+        .luxury-content-wrapper h2, 
+        .luxury-content-wrapper h3, 
+        .luxury-content-wrapper h4, 
+        .luxury-content-wrapper h5 {
+            font-family: var(--font-heading);
+            color: var(--lux-dark);
+        }
 
-<section class="stats-section">
-    <div class="container">
-        <div class="row text-center">
-            <div class="col-md-4 stat-item">
-                <h2 class="counter" data-target="25000">0</h2>
-                <p>Khách hàng hài lòng</p>
-            </div>
-            <div class="col-md-4 stat-item">
-                <h2 class="counter" data-target="50000">0</h2>
-                <p>Lượt đặt phòng</p>
-            </div>
-            <div class="col-md-4 stat-item">
-                <h2 class="counter" data-target="100">0</h2>
-                <p>Phòng nghỉ</p>
-            </div>
-        </div>
-    </div>
-</section>
+        .text-gold { color: var(--lux-gold) !important; }
+        .bg-light-lux { background-color: #fcfbf9; }
 
+       
+        .btn-lux-primary {
+            background-color: var(--lux-dark);
+            color: #fff;
+            border: 1px solid var(--lux-dark);
+            padding: 12px 30px;
+            text-transform: uppercase;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
 
-<section class="py-5">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="fw-bold">Phòng nổi bật</h2>
-            <p class="text-muted">Khám phá các phòng nghỉ sang trọng của chúng tôi</p>
-        </div>
-        <div class="row">
-            {% for room in featured_rooms %}
-            <div class="col-md-3 mb-4">
-                <div class="card room-card h-100">
-                    <img src="{{ room.anh_dai_dien.url }}" class="card-img-top" alt="{{ room.loai_p }}">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ room.get_loai_p_display }}</h5>
-                        <p class="card-text text-muted">{{ room.mo_ta|truncatechars:80 }}</p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-primary fw-bold format-price">{{ room.gia|floatformat:0 }} VND/đêm</span>
-                            <a href="{% url 'room_detail' room.ma_p %}" class="btn btn-sm btn-outline-primary">Xem chi tiết</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        <div class="text-center mt-4">
-            <a href="{% url 'room_search' %}" class="btn btn-primary">Xem tất cả phòng</a>
-        </div>
-    </div>
-</section>
+        .btn-lux-primary:hover {
+            background-color: var(--lux-gold);
+            border-color: var(--lux-gold);
+            color: #fff;
+            transform: translateY(-2px);
+        }
 
+        .btn-lux-outline {
+            background-color: transparent;
+            color: var(--lux-dark);
+            border: 1px solid var(--lux-dark);
+            padding: 12px 30px;
+            text-transform: uppercase;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
 
-<section id="services" class="py-5 bg-light">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="fw-bold">Dịch vụ của chúng tôi</h2>
-            <p class="text-muted">Trải nghiệm các dịch vụ đẳng cấp tại khách sạn</p>
-        </div>
-        <div class="row">
-            {% for service in services %}
-            <div class="col-md-4 mb-4">
-                <div class="card service-card h-100">
-                    <img src="{{ service.anh_dai_dien.url }}" class="card-img-top" alt="{{ service.ten_dv }}">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ service.ten_dv }}</h5>
-                        <p class="card-text text-muted">{{ service.mo_ta|truncatechars:100 }}</p>
-                    </div>
-                    <div class="card-footer bg-white border-0">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-primary fw-bold format-price">{{ service.phi_dv|floatformat:0 }} VND</span>
-                            <a href="{% url 'service_detail' service.ma_dv %}" class="btn btn-sm btn-outline-primary">Chi tiết</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        <div class="text-center mt-4">
-            <a href="{% url 'service_list' %}" class="btn btn-primary">Xem tất cả dịch vụ</a>
-        </div>
-    </div>
-</section>
+        .btn-lux-outline:hover {
+            background-color: var(--lux-dark);
+            color: #fff;
+        }
 
-<section id="testimonials" class="py-5">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="fw-bold">Khách hàng nói gì về chúng tôi</h2>
-            <p class="text-muted">Nghe những câu chuyện thực tế từ những vị khách đã trải nghiệm dịch vụ của chúng tôi.</p>
-        </div>
-        <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="card h-100 shadow-sm p-4 text-center"><img src="{% static 'images/avata6.jpg' %}" class="rounded-circle mx-auto mb-3" alt="Avatar khách hàng" style="width: 80px; height: 80px; object-fit: cover;">
-                    <p class="fst-italic">"Dịch vụ ở đây quá tuyệt vời! Nhân viên cực kỳ thân thiện và phòng ốc sạch sẽ, tiện nghi. Chắc chắn tôi sẽ quay lại."</p>
-                    <h5 class="mt-3 mb-0">Nguyễn Ngọc Minh</h5>
-                    <small class="text-muted">Hà Nội, Việt Nam</small>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card h-100 shadow-sm p-4 text-center">
-                    <img src="{% static 'images/avata5.jpg' %}" class="rounded-circle mx-auto mb-3" alt="Avatar khách hàng" style="width: 80px; height: 80px; object-fit: cover;">
-                    <p class="fst-italic">"Trải nghiệm nghỉ dưỡng đáng nhớ. Hồ bơi và nhà hàng rất đẹp, thức ăn ngon. Cảnh quan xung quanh thật sự thư giãn."</p>
-                    <h5 class="mt-3 mb-0">Đạt Nguyễn</h5>
-                    <small class="text-muted">TP. Hồ Chí Minh, Việt Nam</small>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card h-100 shadow-sm p-4 text-center">
-                    <img src="{% static 'images/avata4.jpg' %}" class="rounded-circle mx-auto mb-3" alt="Avatar khách hàng" style="width: 80px; height: 80px; object-fit: cover;">
-                    <p class="fst-italic">"Phòng suite rộng rãi và có view tuyệt đẹp. Mọi thứ đều được chuẩn bị chu đáo. Đúng là một khách sạn 5 sao thực sự."</p>
-                    <h5 class="mt-3 mb-0">Bùi Anh Tuấn</h5>
-                    <small class="text-muted">Đà Nẵng, Việt Nam</small>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+     
+        .hero-section-lux {
+            position: relative;
+            padding: 80px 0 120px 0;
+            background: linear-gradient(to right, #fff 50%, #fcfbf9 50%);
+        }
 
-<section id="faq" class="py-5 bg-light">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="fw-bold">Câu hỏi thường gặp</h2>
-            <p class="text-muted">Chúng tôi đã tổng hợp những câu hỏi phổ biến nhất để giúp bạn có được thông tin cần thiết một cách nhanh chóng.</p>
-        </div>
+        .hero-img-lux {
+            border-radius: 200px 0 200px 0;
+            box-shadow: 20px 20px 0px rgba(197, 168, 128, 0.2);
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+        }
+
+        .review-badge {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-left: 5px solid var(--lux-gold);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+     
+        .search-section-lux {
+            margin-top: -80px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .search-box-lux {
+            background: #fff;
+            padding: 40px;
+            border-radius: 4px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+            border-top: 5px solid var(--lux-gold);
+        }
+
+     
+        .luxury-content-wrapper .form-control, 
+        .luxury-content-wrapper .form-select {
+            border: 1px solid #e0e0e0;
+            padding: 12px 15px;
+            border-radius: 0;
+        }
         
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="accordion accordion-flush" id="faqAccordion">
-                    
-                    <div class="accordion-item shadow-sm mb-3 rounded">
-                        <h2 class="accordion-header" id="flush-headingOne">
-                            <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-                                1. Làm thế nào để đặt phòng tại CrownePlaza?
-                            </button>
-                        </h2>
-                        <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#faqAccordion">
-                            <div class="accordion-body">
-                                Bạn có thể dễ dàng đặt phòng trực tuyến thông qua trang web của chúng tôi. Chọn "Đặt phòng ngay" ở đầu trang, nhập ngày nhận/trả phòng và số lượng khách. Hệ thống sẽ hiển thị các phòng có sẵn để bạn lựa chọn và hoàn tất quá trình thanh toán.
-                            </div>
-                        </div>
-                    </div>
+        .luxury-content-wrapper .form-control:focus, 
+        .luxury-content-wrapper .form-select:focus {
+            border-color: var(--lux-gold);
+            box-shadow: none;
+        }
 
-                    <div class="accordion-item shadow-sm mb-3 rounded">
-                        <h2 class="accordion-header" id="flush-headingTwo">
-                            <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
-                                2. Khách sạn có những tiện nghi nào?
-                            </button>
-                        </h2>
-                        <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" data-bs-parent="#faqAccordion">
-                            <div class="accordion-body">
-                                CrownePlaza cung cấp đầy đủ các tiện nghi 5 sao như hồ bơi vô cực, nhà hàng sang trọng, phòng gym hiện đại, khu spa và dịch vụ phòng 24/7.
-                            </div>
-                        </div>
-                    </div>
+     
+        .card-lux {
+            border: none;
+            background: #fff;
+            transition: all 0.3s ease;
+            height: 100%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+        }
 
-                    <div class="accordion-item shadow-sm mb-3 rounded">
-                        <h2 class="accordion-header" id="flush-headingThree">
-                            <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
-                                3. Chính sách hủy đặt phòng của khách sạn là gì?
-                            </button>
-                        </h2>
-                        <div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree" data-bs-parent="#faqAccordion">
-                            <div class="accordion-body">
-                                Chúng tôi cho phép hủy đặt phòng miễn phí trong vòng 24 giờ kể từ thời điểm đặt phòng. Sau thời gian này, phí hủy phòng có thể được áp dụng. Vui lòng kiểm tra chi tiết trong email xác nhận hoặc liên hệ trực tiếp với chúng tôi để được hỗ trợ.
-                            </div>
-                        </div>
-                    </div>
+        .card-lux:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
 
-                    <div class="accordion-item shadow-sm mb-3 rounded">
-                        <h2 class="accordion-header" id="flush-headingFour">
-                            <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFour" aria-expanded="false" aria-controls="flush-collapseFour">
-                                4. Tôi có thể mang theo thú cưng không?
-                            </button>
-                        </h2>
-                        <div id="flush-collapseFour" class="accordion-collapse collapse" aria-labelledby="flush-headingFour" data-bs-parent="#faqAccordion">
-                            <div class="accordion-body">
-                                Xin lỗi, hiện tại khách sạn chúng tôi không cho phép mang theo thú cưng. Chúng tôi hy vọng bạn sẽ thông cảm vì điều này.
-                            </div>
-                        </div>
-                    </div>
+        .card-img-wrapper-lux {
+            overflow: hidden;
+            position: relative;
+            height: 250px;
+        }
 
-                    <div class="accordion-item shadow-sm mb-3 rounded">
-                        <h2 class="accordion-header" id="flush-headingFive">
-                            <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFive" aria-expanded="false" aria-controls="flush-collapseFive">
-                                5. Giờ nhận và trả phòng là khi nào?
-                            </button>
-                        </h2>
-                        <div id="flush-collapseFive" class="accordion-collapse collapse" aria-labelledby="flush-headingFive" data-bs-parent="#faqAccordion">
-                            <div class="accordion-body">
-                                Giờ nhận phòng tiêu chuẩn là **14:00**, và giờ trả phòng là **12:00** trưa. Nếu bạn cần nhận phòng sớm hoặc trả phòng muộn, vui lòng liên hệ với lễ tân để kiểm tra khả năng sắp xếp.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+        .card-lux img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
 
-<section id="location" class="py-5">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="fw-bold">Vị trí của chúng tôi</h2>
-            <p class="text-muted">Dễ dàng tìm thấy chúng tôi tại trung tâm thành phố Đà Nẵng.</p>
-        </div>
-        <div class="row">
-            <div class="col-lg-6 mb-4 mb-lg-0">
-                <div class="card h-100 p-4 shadow-sm">
-                    <h4>CrownePlaza Hotel</h4>
-                    <ul class="list-unstyled mt-3">
-                        <li class="mb-2"><i class="fas fa-map-marker-alt me-2 text-primary"></i>8 Võ Nguyên Giáp, Street, Ward, Đà Nẵng</li>
-                        <li class="mb-2"><i class="fas fa-phone me-2 text-primary"></i>0702 664 640</li>
-                        <li class="mb-2"><i class="fas fa-envelope me-2 text-primary"></i>info@crowneplaza.com</li>
-                <li class="mb-2"><i class="fas fa-clock me-2 text-primary"></i>Mở cửa 24/7</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="map-container rounded shadow-sm overflow-hidden" style="height: 400px;">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3834.734053866014!2d108.25395447490322!3d16.027353884646143!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x314217460327806f%3A0x93e2fc2f8c1657f6!2sCrowne%20Plaza%20Danang!5e0!3m2!1svi!2s!4v1758189959213!5m2!1svi!2s" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+        .card-lux:hover img {
+            transform: scale(1.1);
+        }
 
+        .card-lux .card-body {
+            padding: 25px;
+        }
+
+        .price-tag {
+            color: var(--lux-gold);
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+      
+        .testimonial-card {
+            background: #fff;
+            border: 1px solid #eee;
+            padding: 40px 30px;
+            transition: all 0.3s;
+        }
+        .testimonial-card:hover {
+            border-color: var(--lux-gold);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+        .quote-icon {
+            color: var(--lux-gold);
+            font-size: 2rem;
+            opacity: 0.3;
+            margin-bottom: 20px;
+        }
+
+    
+        .stats-section-lux {
+            background-color: var(--lux-dark);
+            color: #fff;
+            padding: 60px 0;
+        }
+
+     
+        .luxury-content-wrapper .accordion-item {
+            border: none;
+            border-bottom: 1px solid #eee;
+            background-color: transparent;
+        }
+        
+        .luxury-content-wrapper .accordion-button {
+            background-color: #fff;
+            color: var(--lux-dark);
+            font-weight: 600;
+            font-family: var(--font-heading);
+            box-shadow: none;
+            padding: 1.5rem 1rem;
+        }
+
+        .luxury-content-wrapper .accordion-button:not(.collapsed) {
+            color: var(--lux-gold);
+            background-color: rgba(197, 168, 128, 0.05);
+        }
+
+        .luxury-content-wrapper .accordion-button::after {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23101820'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+        }
+
+        .luxury-content-wrapper .accordion-button:not(.collapsed)::after {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23c5a880'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+        }
+
+     
+        .feature-icon-box {
+            padding: 2rem;
+            border: 1px solid #eee;
+            transition: all 0.3s ease;
+        }
+        .feature-icon-box:hover {
+            border-color: var(--lux-gold);
+            background-color: #fff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            transform: translateY(-5px);
+        }
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--lux-gold);
+            margin-bottom: 1.5rem;
+        }
+    </style>
 {% endblock %}
 
-<style>
-    .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(13, 110, 253, 0.25);
-        transition: all 0.3s ease;
-    }
-    
-    
-    .img-fluid {
-        transition: transform 0.3s ease;
-    }
-    .img-fluid:hover {
-        transform: scale(1.02);
-    }
+{% block main_content %}
 
+<div class="luxury-content-wrapper">
     
+    <section class="hero-section-lux">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-5 mb-lg-0 pe-lg-5">
+                    <span class="text-gold text-uppercase fw-bold mb-2 d-block" style="letter-spacing: 2px;">Chào mừng đến với CrownePlaza</span>
+                    <h1 class="display-4 fw-bold mb-4">Trải Nghiệm Kỳ Nghỉ <br><span class="fst-italic text-gold">Đẳng Cấp 5 Sao</span></h1>
+                    <p class="lead text-muted mb-5 fw-light">Tận hưởng không gian nghỉ dưỡng tuyệt đối, nơi sự sang trọng hòa quyện cùng thiên nhiên.</p>
+                    
+                    <div class="d-flex flex-wrap gap-3">
+                        <a href="#search" class="btn btn-lux-primary">Đặt phòng ngay</a>
+                        <a href="#services" class="btn btn-lux-outline">Dịch vụ & Tiện ích</a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6">
+                    <div class="hero-img-wrapper position-relative">
+                        <img src="{% static 'images/hotel_banner.jpg' %}" class="hero-img-lux" alt="Luxury Hotel">
+                        <div class="position-absolute bottom-0 start-0 p-4 mb-4 ms-n4">
+                            <div class="review-badge p-3 d-flex align-items-center rounded">
+                                <div class="me-3 text-center">
+                                    <h3 class="mb-0 fw-bold">4.9</h3>
+                                    <div class="text-gold small"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                                </div>
+                                <div class="ps-3 border-start">
+                                    <h6 class="mb-0 text-dark">Khách hàng hài lòng</h6>
+                                    <small class="text-muted">500+ đánh giá</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="search" class="search-section-lux">
+        <div class="container">
+            <div class="search-box-lux">
+                <form method="post" action="{% url 'room_search' %}">
+                    {% csrf_token %}
+                    <div class="row g-4 align-items-end">
+                        <div class="col-md-4">
+                            <label class="form-label text-uppercase text-muted small fw-bold">Số khách</label>
+                            <select class="form-select" name="guests">
+                                <option value="1">1 người</option>
+                                <option value="2" selected>2 người</option>
+                                <option value="3">3 người</option>
+                                <option value="4">4 người</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-uppercase text-muted small fw-bold">Loại phòng</label>
+                            <select class="form-select" name="room_type">
+                                <option value="">Tất cả hạng phòng</option>
+                                <option value="standard">Standard Room</option>
+                                <option value="deluxe">Deluxe Ocean View</option>
+                                <option value="suite">Royal Suite</option>
+                                <option value="family">Family Connecting</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-lux-primary w-100 py-2">
+                                <i class="fas fa-search me-2"></i> Tìm Kiếm
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <section class="stats-section-lux mt-5">
+        <div class="container">
+            <div class="row text-center">
+                <div class="col-md-4 mb-4 mb-md-0 border-end border-secondary">
+                    <h2 class="counter display-4 fw-bold text-gold" data-target="25000">0</h2>
+                    <p class="text-uppercase small">Khách hàng</p>
+                </div>
+                <div class="col-md-4 mb-4 mb-md-0 border-end border-secondary">
+                    <h2 class="counter display-4 fw-bold text-gold" data-target="50000">0</h2>
+                    <p class="text-uppercase small">Lượt đặt</p>
+                </div>
+                <div class="col-md-4">
+                    <h2 class="counter display-4 fw-bold text-gold" data-target="100">0</h2>
+                    <p class="text-uppercase small">Phòng nghỉ</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5 bg-light-lux">
+        <div class="container py-5">
+            <div class="text-center mb-5">
+                <p class="text-gold fst-italic mb-1" style="font-family: 'Playfair Display', serif; font-size: 1.2rem;">Sự lựa chọn hoàn hảo</p>
+                <h2 class="fw-bold display-5">Phòng Nổi Bật</h2>
+                <div class="mx-auto mt-2" style="width: 60px; height: 3px; background-color: #c5a880;"></div>
+            </div>
+
+            <div class="row g-4">
+                {% for room in featured_rooms %}
+                <div class="col-md-6 col-lg-3">
+                    <div class="card-lux">
+                        <div class="card-img-wrapper-lux">
+                            <img src="{{ room.anh_dai_dien.url }}" alt="{{ room.loai_p }}">
+                            <div class="position-absolute top-0 end-0 bg-dark text-white px-3 py-1 m-3 small">HOT</div>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title fw-bold" style="font-family: 'Playfair Display', serif;">{{ room.get_loai_p_display }}</h5>
+                            <p class="card-text text-muted small flex-grow-1">{{ room.mo_ta|truncatechars:80 }}</p>
+                            <div class="mt-3 pt-3 border-top d-flex justify-content-between align-items-center">
+                                <span class="price-tag format-price">{{ room.gia|floatformat:0 }} VND</span>
+                                <a href="{% url 'room_detail' room.ma_p %}" class="btn btn-sm btn-outline-dark rounded-0">Chi tiết</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="text-center mt-5">
+                <a href="{% url 'room_search' %}" class="btn btn-lux-outline">Xem tất cả phòng</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="services" class="py-5">
+        <div class="container py-5">
+            <div class="row align-items-center mb-5">
+                <div class="col-md-6">
+                    <p class="text-gold fst-italic mb-1" style="font-family: 'Playfair Display', serif; font-size: 1.2rem;">Tiện ích đẳng cấp</p>
+                    <h2 class="fw-bold display-5">Dịch Vụ</h2>
+                    <div style="width: 60px; height: 3px; background-color: #c5a880;"></div>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="text-muted mt-3 mt-md-0">Trải nghiệm dịch vụ tiêu chuẩn quốc tế.</p>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                {% for service in services %}
+                <div class="col-md-4">
+                    <div class="card-lux h-100">
+                        <div class="card-img-wrapper-lux" style="height: 200px;">
+                            <img src="{{ service.anh_dai_dien.url }}" alt="{{ service.ten_dv }}">
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold" style="font-family: 'Playfair Display', serif;">{{ service.ten_dv }}</h5>
+                            <p class="card-text text-muted small mb-4">{{ service.mo_ta|truncatechars:100 }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-gold fw-bold format-price">{{ service.phi_dv|floatformat:0 }} VND</span>
+                                <a href="{% url 'service_detail' service.ma_dv %}" class="text-dark text-decoration-none small fw-bold text-uppercase">Xem thêm</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+             <div class="text-center mt-5">
+                 <a href="{% url 'service_list' %}" class="btn btn-lux-outline">Xem tất cả dịch vụ</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="gioi-thieu" class="py-5 bg-light-lux">
+        <div class="container py-5">
+            <div class="text-center mb-5">
+                <p class="text-gold fst-italic mb-1" style="font-family: 'Playfair Display', serif; font-size: 1.2rem;">Khác biệt tạo nên đẳng cấp</p>
+                <h2 class="fw-bold display-5">Tại Sao Chọn CrownePlaza?</h2>
+                <div class="mx-auto mt-2" style="width: 60px; height: 3px; background-color: #c5a880;"></div>
+            </div>
+            
+            <div class="row g-4 text-center">
+                <div class="col-md-4">
+                    <div class="feature-icon-box h-100">
+                        <div class="feature-icon"><i class="fas fa-water"></i></div>
+                        <h4 class="mb-3">View Biển Tuyệt Đẹp</h4>
+                        <p class="text-muted">Tất cả các phòng đều có tầm nhìn hướng biển hoặc thành phố tuyệt đẹp, mang lại cảm giác thư giãn tuyệt đối.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-icon-box h-100">
+                        <div class="feature-icon"><i class="fas fa-utensils"></i></div>
+                        <h4 class="mb-3">Ẩm Thực Đỉnh Cao</h4>
+                        <p class="text-muted">Trải nghiệm ẩm thực 5 sao với các đầu bếp hàng đầu thế giới, phục vụ các món ăn Á - Âu đa dạng.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-icon-box h-100">
+                        <div class="feature-icon"><i class="fas fa-spa"></i></div>
+                        <h4 class="mb-3">Spa & Thư Giãn</h4>
+                        <p class="text-muted">Hệ thống Spa hiện đại, liệu trình chăm sóc sức khỏe chuyên sâu giúp bạn tái tạo năng lượng.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
     
-    
-</style>
+    <section id="testimonials" class="py-5">
+        <div class="container py-5">
+            <div class="text-center mb-5">
+                 <p class="text-gold fst-italic mb-1" style="font-family: 'Playfair Display', serif; font-size: 1.2rem;">Cảm nhận khách hàng</p>
+                <h2 class="fw-bold display-5">Lời Khen Ngợi</h2>
+                <div class="mx-auto mt-2" style="width: 60px; height: 3px; background-color: #c5a880;"></div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="testimonial-card h-100 text-center">
+                        <i class="fas fa-quote-left quote-icon"></i>
+                        <p class="fst-italic text-muted mb-4">"Dịch vụ ở đây quá tuyệt vời! Nhân viên cực kỳ thân thiện và phòng ốc sạch sẽ, tiện nghi."</p>
+                        <div class="d-flex align-items-center justify-content-center mt-auto">
+                            <img src="{% static 'images/avata5.jpg' %}" class="rounded-circle shadow-sm me-3" style="width: 50px; height: 50px; object-fit: cover;" alt="Avatar">
+                            <div class="text-start">
+                                <h6 class="mb-0 fw-bold">Nguyễn Đạt</h6>
+                                <small class="text-gold text-uppercase" style="font-size: 0.7rem;">Hà Nội</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="testimonial-card h-100 text-center">
+                        <i class="fas fa-quote-left quote-icon"></i>
+                        <p class="fst-italic text-muted mb-4">"Trải nghiệm nghỉ dưỡng đáng nhớ. Hồ bơi và nhà hàng rất đẹp, thức ăn ngon."</p>
+                        <div class="d-flex align-items-center justify-content-center mt-auto">
+                            <img src="{% static 'images/avata6.jpg' %}" class="rounded-circle shadow-sm me-3" style="width: 50px; height: 50px; object-fit: cover;" alt="Avatar">
+                            <div class="text-start">
+                                <h6 class="mb-0 fw-bold">Nguyễn Ngọc Minh</h6>
+                                <small class="text-gold text-uppercase" style="font-size: 0.7rem;">TP. HCM</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                 <div class="col-md-4">
+                    <div class="testimonial-card h-100 text-center">
+                        <i class="fas fa-quote-left quote-icon"></i>
+                        <p class="fst-italic text-muted mb-4">"Phòng suite rộng rãi và có view tuyệt đẹp. Mọi thứ đều được chuẩn bị chu đáo."</p>
+                        <div class="d-flex align-items-center justify-content-center mt-auto">
+                            <img src="{% static 'images/avata4.jpg' %}" class="rounded-circle shadow-sm me-3" style="width: 50px; height: 50px; object-fit: cover;" alt="Avatar">
+                            <div class="text-start">
+                                <h6 class="mb-0 fw-bold">Bùi Anh Tuấn</h6>
+                                <small class="text-gold text-uppercase" style="font-size: 0.7rem;">Đà Nẵng</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="faq" class="py-5 bg-light-lux">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="text-center mb-5">
+                        <p class="text-gold fst-italic mb-1" style="font-family: 'Playfair Display', serif; font-size: 1.2rem;">Thông tin hữu ích</p>
+                        <h2 class="fw-bold display-5">Câu Hỏi Thường Gặp</h2>
+                        <div class="mx-auto mt-2" style="width: 60px; height: 3px; background-color: #c5a880;"></div>
+                    </div>
+                    
+                    <div class="accordion accordion-flush" id="faqAccordion">
+                        <div class="accordion-item mb-3">
+                            <h2 class="accordion-header" id="flush-headingOne">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne">
+                                    1. Làm thế nào để đặt phòng tại CrownePlaza?
+                                </button>
+                            </h2>
+                            <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-muted">
+                                    Bạn có thể dễ dàng đặt phòng trực tuyến thông qua trang web của chúng tôi. Chọn "Đặt phòng ngay" ở đầu trang, nhập ngày nhận/trả phòng và số lượng khách. Hệ thống sẽ hiển thị các phòng có sẵn để bạn lựa chọn và hoàn tất quá trình thanh toán.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item mb-3">
+                            <h2 class="accordion-header" id="flush-headingTwo">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo">
+                                    2. Giờ nhận phòng và trả phòng là khi nào?
+                                </button>
+                            </h2>
+                            <div id="flush-collapseTwo" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-muted">
+                                    Giờ nhận phòng tiêu chuẩn là <strong>14:00</strong> chiều và giờ trả phòng là <strong>12:00</strong> trưa. Nếu quý khách cần nhận phòng sớm hoặc trả phòng muộn, vui lòng liên hệ lễ tân để được hỗ trợ tùy thuộc vào tình trạng phòng trống.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="accordion-item mb-3">
+                            <h2 class="accordion-header" id="flush-headingThree">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree">
+                                    3. Chính sách hủy phòng như thế nào?
+                                </button>
+                            </h2>
+                            <div id="flush-collapseThree" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-muted">
+                                    Chúng tôi cho phép hủy đặt phòng miễn phí trong vòng 24 giờ kể từ thời điểm đặt phòng. Đối với các yêu cầu hủy sát giờ, phí hủy phòng có thể được áp dụng tùy theo loại phòng và thời điểm đặt.
+                                </div>
+                            </div>
+                        </div>
+
+                         <div class="accordion-item mb-3">
+                            <h2 class="accordion-header" id="flush-headingFour">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFour">
+                                    4. Khách sạn có dịch vụ đưa đón sân bay không?
+                                </button>
+                            </h2>
+                            <div id="flush-collapseFour" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-muted">
+                                    Có, chúng tôi cung cấp dịch vụ đưa đón sân bay bằng xe sang trọng. Quý khách vui lòng cung cấp thông tin chuyến bay khi đặt phòng hoặc liên hệ bộ phận lễ tân trước 24 giờ để chúng tôi sắp xếp chu đáo nhất.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+     <section id="location" class="py-5">
+        <div class="container py-5">
+            <div class="row g-0 shadow-lg rounded overflow-hidden">
+                <div class="col-lg-4 bg-dark text-white p-5 d-flex flex-column justify-content-center">
+                    <h3 class="font-heading mb-4" style="color:white; font-family: 'Playfair Display', serif;">Liên Hệ & Vị Trí</h3>
+                    <p class="text-white-50 mb-4">Nằm ngay trung tâm thành phố Đà Nẵng, thuận tiện cho việc di chuyển và tham quan.</p>
+                    
+                    <div class="mb-3 d-flex align-items-start">
+                        <i class="fas fa-map-marker-alt text-gold mt-1 me-3"></i>
+                        <span>8 Võ Nguyên Giáp, Street, Ward, Đà Nẵng</span>
+                    </div>
+                    <div class="mb-3 d-flex align-items-center">
+                        <i class="fas fa-phone text-gold me-3"></i>
+                        <span>(+84) 2367 307 999</span>
+                    </div>
+                    <div class="mb-3 d-flex align-items-center">
+                        <i class="fas fa-envelope text-gold me-3"></i>
+                        <span>info@cpdanangcity.com</span>
+                    </div>
+                    <div class="mt-4 pt-4 border-top border-secondary">
+                        <small class="text-gold text-uppercase ls-2">Giờ mở cửa</small>
+                        <p class="mb-0 mt-1">Phục vụ 24/7 tất cả các ngày trong tuần</p>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="h-100" style="min-height: 450px;">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3834.734053866014!2d108.25395447490322!3d16.027353884646143!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x314217460327806f%3A0x93e2fc2f8c1657f6!2sCrowne%20Plaza%20Danang!5e0!3m2!1svi!2s!4v1758189959213!5m2!1svi!2s" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div> {% endblock %}
 
 {% block extra_js %}
 {{ block.super }}
 <script>
-   
     const counters = document.querySelectorAll('.counter');
-    const statsSection = document.querySelector('.stats-section');
+    const statsSection = document.querySelector('.stats-section-lux');
     const duration = 2000; 
 
     const startCounter = (counter) => {
@@ -355,30 +614,22 @@
         const timer = setInterval(() => {
             currentCount += step;
             if (currentCount >= countTo) {
-               
                 clearInterval(timer);
                 currentCount = countTo;
             }
-           
-            counter.innerText = Math.floor(currentCount).toLocaleString('en-US');
+            counter.innerText = Math.floor(currentCount).toLocaleString('vi-VN');
         }, 10);
     };
 
-    const observer = new IntersectionObserver(
-        (entries, observer) => {
+    if(statsSection) {
+        const observer = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     counters.forEach(startCounter);
                     observer.unobserve(entry.target); 
                 }
             });
-        },
-        {
-            threshold: 0.5 
-        }
-    );
-
-    if (statsSection) {
+        }, { threshold: 0.5 });
         observer.observe(statsSection);
     }
 </script>

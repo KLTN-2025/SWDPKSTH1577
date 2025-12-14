@@ -1,198 +1,357 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
-{% block main_content %}
-<nav aria-label="breadcrumb" class="container mt-3">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{% url 'home' %}">Trang chủ</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'room_search' %}">Danh sách phòng</a></li>
-        <li class="breadcrumb-item active" aria-current="page">{{ room.ten_p }}</li>
-    </ol>
-</nav>
+{% block extra_css %}
+    {{ block.super }}
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-<section class="py-3">
-    <div class="container">
-        <div class="row">
-            
-            <div class="col-lg-8">
-                <div class="card border-0 shadow-sm mb-4">
-                    <img src="{{ room.anh_dai_dien.url }}" class="card-img-top " alt="{{ room.ten_p }}" style="height: 400px; object-fit: cover; border-radius: 20px;">
-                    
-                    <div class="card-body">
-                        <h1 class="h3 fw-bold">{{ room.ten_p }}</h1>
-                        <p class="text-muted mb-3">{{ room.get_loai_p_display }}</p>
-                        
-                        <h5 class="mt-4">Về phòng này</h5>
-                        <p class="card-text">{{ room.mo_ta }}</p>
-                        
-                        
-                    </div>
-                </div>
-            </div>
-            
-            
-            <div class="col-lg-4">
-                <div class="card border-0 shadow-sm sticky-top" style="top: 100px; z-index: 900;">
-                    <div class="card-body">
-                        
-                        <div class="row g-2 mb-4">
-                            <div class="col-12 mb-2">
-                                <img src="{% static 'images/p1.png' %}" class="img-fluid " alt="Phòng view biển" style="height: 185px; width: 100%; object-fit: cover; border-radius: 20px;">
+    <style>
+        :root {
+            --lux-gold: #c5a880;
+            --lux-gold-hover: #b09060;
+            --lux-dark: #101820;
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .room-page-wrapper {
+            font-family: var(--font-body);
+            color: #4a4a4a;
+            background-color: #fcfbf9;
+        }
+
+        h1, h2, h3, h4, h5 {
+            font-family: var(--font-heading);
+            color: var(--lux-dark);
+        }
+
+       
+        .breadcrumb-item a {
+            color: #666;
+            text-decoration: none;
+        }
+        .breadcrumb-item.active {
+            color: var(--lux-gold);
+            font-weight: 600;
+        }
+
+       
+        .card-lux-img {
+            border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border-radius: 12px;
+            overflow: hidden;
+            background: #fff;
+        }
+
+        
+        .card-lux-booking {
+            border: none;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+            border-radius: 12px;
+            background: #fff;
+            border-top: 4px solid var(--lux-gold);
+        }
+
+        .price-display {
+            font-family: var(--font-heading);
+            color: var(--lux-dark);
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+       
+        .btn-lux-primary {
+            background-color: var(--lux-dark);
+            color: #fff;
+            border: 1px solid var(--lux-dark);
+            padding: 12px 25px;
+            text-transform: uppercase;
+            font-weight: 600;
+            transition: all 0.3s;
+            width: 100%;
+        }
+        .btn-lux-primary:hover {
+            background-color: var(--lux-gold);
+            border-color: var(--lux-gold);
+            color: #fff;
+        }
+
+       
+        .review-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.03);
+            padding: 30px;
+        }
+        .avatar-review {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+     
+        .modal-content-lux {
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .modal-header-lux {
+            background-color: var(--lux-dark);
+            color: #fff;
+            border-bottom: 3px solid var(--lux-gold);
+        }
+        .modal-header-lux .btn-close {
+            filter: invert(1);
+        }
+        
+        .form-label-lux {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--lux-dark);
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        
+        .form-control-lux, .form-select-lux {
+            border: 1px solid #e0e0e0;
+            padding: 10px;
+            border-radius: 6px;
+        }
+        .form-control-lux:focus, .form-select-lux:focus {
+            border-color: var(--lux-gold);
+            box-shadow: none;
+        }
+    </style>
+{% endblock %}
+
+{% block main_content %}
+<div class="room-page-wrapper">
+    <nav aria-label="breadcrumb" class="container py-3">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'room_search' %}">Danh sách phòng</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ room.ten_p }}</li>
+        </ol>
+    </nav>
+
+    <section class="pb-5">
+        <div class="container">
+            <div class="row g-4">
+                
+                <div class="col-lg-8">
+                    <div class="card-lux-img mb-4">
+                        <img src="{{ room.anh_dai_dien.url }}" class="w-100" alt="{{ room.ten_p }}" style="height: 450px; object-fit: cover;">
+                        <div class="card-body p-4">
+                            <h1 class="h2 fw-bold mb-2">{{ room.ten_p }}</h1>
+                            <p class="text-gold fst-italic mb-4">{{ room.get_loai_p_display }}</p>
+                            
+                            <h5 class="mb-3 border-bottom pb-2">Giới thiệu</h5>
+                            <p class="text-muted" style="line-height: 1.8;">{{ room.mo_ta }}</p>
+                            
+                            <div class="row mt-4 g-3">
+                                <div class="col-md-4">
+                                    <div class="d-flex align-items-center text-muted">
+                                        <i class="fas fa-users fa-lg me-3 text-gold"></i>
+                                        <div>
+                                            <span class="d-block fw-bold text-dark">Sức chứa</span>
+                                            <small>{{ room.suc_chua }} người</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="d-flex align-items-center text-muted">
+                                        <i class="fas fa-ruler-combined fa-lg me-3 text-gold"></i>
+                                        <div>
+                                            <span class="d-block fw-bold text-dark">Diện tích</span>
+                                            <small>45 m²</small> </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="d-flex align-items-center text-muted">
+                                        <i class="fas fa-bed fa-lg me-3 text-gold"></i>
+                                        <div>
+                                            <span class="d-block fw-bold text-dark">Giường</span>
+                                            <small>King Size</small> </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-12 mb-2">
-                                <img src="{% static 'images/p2.jpg' %}" class="img-fluid " alt="Phòng view thành phố" style="height: 185px; width: 100%; object-fit: cover; border-radius: 20px;">
+                        </div>
+                    </div>
+
+                    <div class="review-card mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="mb-0">Đánh giá khách hàng</h4>
+                            <div class="text-end">
+                                <span class="badge bg-dark text-gold fs-6 px-3 py-2">
+                                    <i class="fas fa-star me-1"></i> {{ avg_rating }}/5
+                                </span>
+                                <small class="d-block text-muted mt-1">{{ review_count }} đánh giá</small>
                             </div>
                         </div>
                         
-                        <h4 class="text-center mb-4">Booking</h4>
-                        <h3 class="text-primary text-center mb-4 format-price">{{ room.gia|floatformat:0 }} VND/ngày</h3>
-                        
-                        <button class="btn btn-primary w-100 py-2" data-bs-toggle="modal" data-bs-target="#bookingModal">
-                            Đặt phòng ngay
-                        </button>
+                        {% if reviews %}
+                            {% for review in reviews %}
+                            <div class="d-flex mb-4 pb-4 border-bottom last-no-border">
+                                <img src="{% if review.khach_hang.anh_dai_dien %}{{ review.khach_hang.anh_dai_dien.url }}{% else %}{% static 'images/default-avatar.jpg' %}{% endif %}" 
+                                     class="avatar-review me-3" alt="Avatar">
+                                <div>
+                                    <h6 class="mb-1 fw-bold">{{ review.khach_hang.ten_kh }}</h6>
+                                    <div class="text-warning small mb-2">
+                                        {% for i in "12345"|make_list %}
+                                            {% if forloop.counter <= review.diem_so %}
+                                                <i class="fas fa-star"></i>
+                                            {% else %}
+                                                <i class="far fa-star"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <p class="mb-1 text-muted small">{{ review.binh_luan }}</p>
+                                    <small class="text-muted fst-italic" style="font-size: 0.75rem;">
+                                        {{ review.ngay_tao|date:"d/m/Y" }}
+                                    </small>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="far fa-comment-dots fa-2x text-muted mb-2"></i>
+                                <p class="text-muted">Chưa có đánh giá nào cho phòng này.</p>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
-            </div>
 
-                        <div class="card border-0 shadow-sm mt-4 mb-4">
-    <div class="card-body">
-        <h4 class="mb-4">
-            Đánh giá từ khách hàng 
-            <span class="badge bg-warning text-dark">
-                <i class="fas fa-star"></i> {{ avg_rating }}/5
-            </span>
-            <small class="text-muted fs-6">({{ review_count }} đánh giá)</small>
-        </h4>
-        
-        {% if reviews %}
-            {% for review in reviews %}
-            <div class="d-flex mb-3 border-bottom pb-3">
-                <img src="{% if review.khach_hang.anh_dai_dien %}{{ review.khach_hang.anh_dai_dien.url }}{% else %}{% static 'images/default-avatar.jpg' %}{% endif %}" 
-                     class="rounded-circle me-3" width="50" height="50" style="object-fit: cover;">
-                <div>
-                    <h6 class="mb-1 fw-bold">{{ review.khach_hang.ten_kh }}</h6>
-                    <div class="text-warning mb-1">
-                        {% for i in "12345"|make_list %}
-                            {% if forloop.counter <= review.diem_so %}
-                                <i class="fas fa-star"></i>
-                            {% else %}
-                                <i class="far fa-star"></i>
-                            {% endif %}
-                        {% endfor %}
+                <div class="col-lg-4">
+                    <div class="card-lux-booking sticky-top" style="top: 100px; z-index: 900;">
+                        <div class="card-body p-4">
+                            <h5 class="text-center mb-4 text-uppercase fw-bold ls-1">Đặt Phòng Ngay</h5>
+                            
+                            <div class="text-center mb-4">
+                                <span class="price-display format-price">{{ room.gia|floatformat:0 }} VND</span>
+                                <span class="text-muted small">/ đêm</span>
+                            </div>
+
+                            <div class="row g-2 mb-4">
+                                <div class="col-6">
+                                    <img src="{% static 'images/p1.png' %}" class="img-fluid rounded shadow-sm" alt="View 1" style="height: 100px; object-fit: cover;">
+                                </div>
+                                <div class="col-6">
+                                    <img src="{% static 'images/p2.jpg' %}" class="img-fluid rounded shadow-sm" alt="View 2" style="height: 100px; object-fit: cover;">
+                                </div>
+                            </div>
+                            
+                            <ul class="list-unstyled mb-4 text-muted small">
+                                <li class="mb-2"><i class="fas fa-check text-gold me-2"></i>Wifi miễn phí tốc độ cao</li>
+                                <li class="mb-2"><i class="fas fa-check text-gold me-2"></i>Bữa sáng miễn phí</li>
+                                <li class="mb-2"><i class="fas fa-check text-gold me-2"></i>Hồ bơi vô cực</li>
+                                <li><i class="fas fa-check text-gold me-2"></i>Hoàn hủy linh hoạt</li>
+                            </ul>
+
+                            <button class="btn btn-lux-primary py-3" data-bs-toggle="modal" data-bs-target="#bookingModal">
+                                Kiểm tra & Đặt phòng
+                            </button>
+                        </div>
                     </div>
-                    <p class="mb-1">{{ review.binh_luan }}</p>
-                    <small class="text-muted">{{ review.ngay_tao|date:"d/m/Y H:i" }} | Đã ở phòng: {{ review.don_dat_phong.phong.ten_p }}</small>
                 </div>
             </div>
-            {% endfor %}
-        {% else %}
-            <p class="text-center text-muted">Chưa có đánh giá nào cho phòng này.</p>
-        {% endif %}
-    </div>
+        </div>
+    </section>
 </div>
 
-        </div>
-    </div>
-</section>
-
-
-<div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="bookingModalLabel">
-                    <span class="badge bg-primary rounded-circle me-2">1</span>
-                    Thông tin lưu trú
+<div class="modal fade" id="bookingModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content modal-content-lux">
+            <div class="modal-header modal-header-lux">
+                <h5 class="modal-title text-white">
+                    <span class="badge bg-gold text-dark me-2">1</span> Thông Tin Lưu Trú
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form method="post" action="{% url 'room_detail' room.ma_p %}">
                 {% csrf_token %}
                 <input type="hidden" name="step" value="1">
                 
-                <div class="modal-body">
+                <div class="modal-body p-4">
                     <div class="row">
-                        
-                        <div class="col-md-6">
-                            <img src="{{ room.anh_dai_dien.url }}" class="img-fluid  mb-3" alt="{{ room.ten_p }}" style="border-radius: 20px;">
-                            <h5>{{ room.ten_p }}</h5>
-                            <p class="text-muted">{{ room.get_loai_p_display }}</p>
+                        <div class="col-md-5 border-end">
+                            <img src="{{ room.anh_dai_dien.url }}" class="img-fluid rounded mb-3 shadow-sm" alt="{{ room.ten_p }}">
+                            <h5 class="fw-bold">{{ room.ten_p }}</h5>
+                            <p class="text-muted small">{{ room.get_loai_p_display }}</p>
+                            <hr>
+                            <div class="d-flex justify-content-between">
+                                <span>Giá gốc:</span>
+                                <span class="fw-bold">{{ room.gia|floatformat:0 }} VND</span>
+                            </div>
                         </div>
                         
-                        
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Ngày nhận phòng</label>
-                                <input type="date" name="check_in" class="form-control" required>
+                        <div class="col-md-7 ps-md-4">
+                            <div class="row g-3 mb-3">
+                                <div class="col-6">
+                                    <label class="form-label-lux">Nhận phòng</label>
+                                    <input type="date" name="check_in" class="form-control form-control-lux" required>
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label-lux">Trả phòng</label>
+                                    <input type="date" name="check_out" class="form-control form-control-lux" required>
+                                </div>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Ngày trả phòng</label>
-                                <input type="date" name="check_out" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Số người</label>
-                                <select name="guests" class="form-select" required>
+                                <label class="form-label-lux">Số khách</label>
+                                <select name="guests" class="form-select form-select-lux" required>
                                     {% for i in room.guest_range %}
                                     <option value="{{ i }}">{{ i }} người</option>
                                     {% endfor %}
                                 </select>
                             </div>
                             
-                            <div class="card bg-light border-0 mt-3">
-    <div class="card-body">
-        <label class="form-label fw-bold small">Mã giảm giá (Coupon)</label>
-        <div class="input-group mb-3">
-            <input type="text" id="couponCode" class="form-control" placeholder="Nhập mã khuyến mãi...">
-            <button class="btn btn-outline-primary" type="button" onclick="applyCoupon()">Áp dụng</button>
-        </div>
-        <div id="couponMessage" class="small mb-2"></div>
+                            <div class="bg-light p-3 rounded">
+                                <label class="form-label-lux small">Mã giảm giá</label>
+                                <div class="input-group mb-2">
+                                    <input type="text" id="couponCode" class="form-control form-control-lux" placeholder="Nhập mã...">
+                                    <button class="btn btn-dark" type="button" onclick="applyCoupon()">Áp dụng</button>
+                                </div>
+                                <div id="couponMessage" class="small mb-2"></div>
 
-        <hr>
-
-        <div class="d-flex justify-content-between mb-1">
-            <span>Đơn giá:</span>
-            <span>{{ room.gia|floatformat:0 }} VND/đêm</span>
-        </div>
-        <div class="d-flex justify-content-between mb-1">
-            <span>Số đêm:</span>
-            <span id="totalNights">0</span>
-        </div>
-        <div class="d-flex justify-content-between mb-1">
-            <span>Tạm tính:</span>
-            <span id="subTotal">0 VND</span>
-        </div>
-        <div class="d-flex justify-content-between mb-2 text-success">
-            <span>Giảm giá:</span>
-            <span id="discountAmount" class="fw-bold">- 0 VND</span>
-        </div>
-        <div class="d-flex justify-content-between border-top pt-2">
-            <h6 class="mb-0">Tổng thanh toán:</h6>
-            <h5 class="mb-0 text-primary fw-bold" id="finalPrice">0 VND</h5>
-        </div>
-    </div>
-</div>
+                                <div class="border-top pt-2 mt-2">
+                                    <div class="d-flex justify-content-between small mb-1">
+                                        <span>Số đêm:</span> <span id="totalNights" class="fw-bold">0</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between small mb-1">
+                                        <span>Tạm tính:</span> <span id="subTotal">0 VND</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between small text-success mb-2">
+                                        <span>Giảm giá:</span> <span id="discountAmount" class="fw-bold">- 0 VND</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="fw-bold text-dark">TỔNG CỘNG:</span>
+                                        <span class="h5 mb-0 text-gold fw-bold" id="finalPrice">0 VND</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer border-0 pb-4 pe-4">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="button" class="btn btn-primary" onclick="nextStep()">Kế tiếp</button>
+                    <button type="button" class="btn btn-lux-primary ms-2" onclick="nextStep()">Tiếp tục <i class="fas fa-arrow-right ms-1"></i></button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-
-<div class="modal fade" id="customerInfoModal" tabindex="-1" aria-labelledby="customerInfoModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="customerInfoModalLabel">
-                    <span class="badge bg-primary rounded-circle me-2">2</span>
-                    Thông tin khách hàng
+<div class="modal fade" id="customerInfoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content modal-content-lux">
+            <div class="modal-header modal-header-lux">
+                <h5 class="modal-title text-white">
+                    <span class="badge bg-gold text-dark me-2">2</span> Xác Nhận & Thanh Toán
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form method="post" action="{% url 'room_detail' room.ma_p %}">
                 {% csrf_token %}
@@ -201,73 +360,68 @@
                 <input type="hidden" name="check_out" id="finalCheckOut">
                 <input type="hidden" name="guests" id="finalGuests">
                 
-                <div class="modal-body">
+                <div class="modal-body p-4">
                     <div class="row">
-                        
-                        <div class="col-md-6">
-                            <img src="{{ room.anh_dai_dien.url }}" class="img-fluid  mb-3" alt="{{ room.ten_p }}" style="border-radius: 20px;">
-                            <h5>{{ room.ten_p }}</h5>
-                            <p class="text-muted">{{ room.get_loai_p_display }}</p>
+                        <div class="col-md-5 border-end">
+                            <img src="{{ room.anh_dai_dien.url }}" class="img-fluid rounded mb-3" alt="{{ room.ten_p }}">
+                            <h5 class="fw-bold">{{ room.ten_p }}</h5>
+                            <div class="alert alert-info py-2 small mb-0">
+                                <i class="fas fa-info-circle me-1"></i> Vui lòng kiểm tra kỹ thông tin trước khi thanh toán.
+                            </div>
                         </div>
                         
-                        
-                        <div class="col-md-6">
+                        <div class="col-md-7 ps-md-4">
+                            <h6 class="text-uppercase fw-bold text-muted small mb-3">Thông tin người đặt</h6>
                             {% if user.is_authenticated and user.khachhang %}
-
-                            <div class="mb-3">
-                                <label class="form-label">Tên khách hàng</label>
-                                <input type="text" class="form-control" value="{{ user.khachhang.ten_kh }}" readonly>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Email</label>
-                                <input type="email" class="form-control" value="{{ user.email }}" readonly>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Số điện thoại</label>
-                                <input type="tel" class="form-control" value="{{ user.khachhang.sdt }}" readonly>
-                            </div>
+                                <div class="mb-2">
+                                    <label class="small text-muted">Họ tên:</label>
+                                    <input type="text" class="form-control form-control-lux bg-light" value="{{ user.khachhang.ten_kh }}" readonly>
+                                </div>
+                                <div class="mb-2">
+                                    <label class="small text-muted">Email:</label>
+                                    <input type="email" class="form-control form-control-lux bg-light" value="{{ user.email }}" readonly>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="small text-muted">SĐT:</label>
+                                    <input type="tel" class="form-control form-control-lux bg-light" value="{{ user.khachhang.sdt }}" readonly>
+                                </div>
+                                
+                                <h6 class="text-uppercase fw-bold text-muted small mb-3">Phương thức thanh toán</h6>
+                                <div id="paypal-button-container"></div>
                             {% else %}
-                            <div class="alert alert-warning">
-                                Vui lòng <a href="{% url 'login' %}">đăng nhập</a> để đặt phòng
-                            </div>
+                                <div class="text-center py-5">
+                                    <i class="fas fa-lock fa-2x text-warning mb-3"></i>
+                                    <p>Vui lòng đăng nhập để tiếp tục.</p>
+                                    <a href="{% url 'login' %}" class="btn btn-dark w-100">Đăng nhập ngay</a>
+                                </div>
                             {% endif %}
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" onclick="prevStep()">Quay lại</button>
-    {% if user.is_authenticated and user.khachhang %}
-        <div id="paypal-button-container"></div>
-    {% else %}
-        <div class="alert alert-warning">
-            Vui lòng <a href="{% url 'login' %}">đăng nhập</a> để đặt phòng
-        </div>
-    {% endif %}
+                <div class="modal-footer border-0 pb-4 pe-4 justify-content-start ps-4">
+                    <button type="button" class="btn btn-outline-secondary" onclick="prevStep()"><i class="fas fa-arrow-left me-1"></i> Quay lại</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-
-<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title" id="successModalLabel">CrownePlaza</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-center py-4">
-                <i class="fas fa-check-circle text-success display-4 mb-3"></i>
-                <h4>Đã đặt phòng thành công!</h4>
-                <p>Chào mừng bạn đến với CrownePlaza.</p>
-                <div class="progress mt-3">
-                    <div class="progress-bar progress-bar-striped progress-bar-animated" id="redirectProgress" style="width: 0%"></div>
+<div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0">
+            <div class="modal-body text-center py-5">
+                <div class="mb-4">
+                    <i class="fas fa-check-circle text-success" style="font-size: 5rem;"></i>
                 </div>
-                <p class="small text-muted mt-2">Tự động chuyển hướng sau <span id="countdown">20</span> giây...</p>
-            </div>
-            <div class="modal-footer justify-content-center">
-                <a href="#" id="bookingDetailLink" class="btn btn-primary">Chi tiết đơn đặt phòng</a>
+                <h3 class="fw-bold mb-3">Đặt Phòng Thành Công!</h3>
+                <p class="text-muted mb-4">Cảm ơn bạn đã lựa chọn CrownePlaza. <br>Mã đơn đặt phòng của bạn đã được gửi qua email.</p>
+                
+                <div class="progress mb-3" style="height: 5px;">
+                    <div class="progress-bar bg-success" id="redirectProgress" style="width: 0%"></div>
+                </div>
+                <p class="small text-muted mb-4">Tự động chuyển hướng sau <span id="countdown" class="fw-bold text-dark">20</span> giây...</p>
+                
+                <a href="#" id="bookingDetailLink" class="btn btn-lux-primary w-50">Xem chi tiết đơn</a>
             </div>
         </div>
     </div>
@@ -277,379 +431,268 @@
 <script src="https://www.paypal.com/sdk/js?client-id=AUbh_JXsTbSU-qKuw2cR5TMVzTdMcFwFkEg9dTHEApigqGwaBFz1K19mmAMr9GWo-XA7P3sbfphMZZDo&currency=USD"></script>
 
 <script>
-let currentTotalVND = 0;
-let currentDiscount = 0;
-let currentFinalPrice = 0;
-function calculateTotal() {
-    const checkIn = document.querySelector('input[name="check_in"]');
-    const checkOut = document.querySelector('input[name="check_out"]');
-    const pricePerNight = parseFloat("{{ room.gia }}");
-    
-    
-    resetCoupon(); 
+   
+    let currentTotalVND = 0;
+    let currentDiscount = 0;
+    let currentFinalPrice = 0;
 
-    if (checkIn.value && checkOut.value) {
-        const dateIn = new Date(checkIn.value);
-        const dateOut = new Date(checkOut.value);
-        const nights = Math.ceil((dateOut - dateIn) / (86400000)); 
+    function calculateTotal() {
+        const checkIn = document.querySelector('input[name="check_in"]');
+        const checkOut = document.querySelector('input[name="check_out"]');
+        const pricePerNight = parseFloat("{{ room.gia }}");
         
-        if (nights > 0) {
-           
-            currentTotalVND = nights * pricePerNight;
-            currentFinalPrice = currentTotalVND; 
+        resetCoupon(); 
 
-           
-            document.getElementById('totalNights').textContent = nights;
-            document.getElementById('subTotal').textContent = currentTotalVND.toLocaleString('vi-VN') + ' VND';
-            updateFinalPriceUI();
+        if (checkIn.value && checkOut.value) {
+            const dateIn = new Date(checkIn.value);
+            const dateOut = new Date(checkOut.value);
+            const nights = Math.ceil((dateOut - dateIn) / (86400000)); 
+            
+            if (nights > 0) {
+                currentTotalVND = nights * pricePerNight;
+                currentFinalPrice = currentTotalVND; 
+
+                document.getElementById('totalNights').textContent = nights;
+                document.getElementById('subTotal').textContent = currentTotalVND.toLocaleString('vi-VN') + ' VND';
+                updateFinalPriceUI();
+                return;
+            }
+        }
+        
+        currentTotalVND = 0;
+        currentFinalPrice = 0;
+        document.getElementById('totalNights').textContent = '0';
+        document.getElementById('subTotal').textContent = '0 VND';
+        updateFinalPriceUI();
+    }
+
+    function updateFinalPriceUI() {
+        document.getElementById('discountAmount').textContent = '- ' + currentDiscount.toLocaleString('vi-VN') + ' VND';
+        document.getElementById('finalPrice').textContent = currentFinalPrice.toLocaleString('vi-VN') + ' VND';
+    }
+
+    function resetCoupon() {
+        currentDiscount = 0;
+        currentFinalPrice = currentTotalVND;
+        document.getElementById('couponMessage').innerHTML = '';
+        document.getElementById('discountAmount').classList.remove('text-success');
+        updateFinalPriceUI();
+    }
+
+    function applyCoupon() {
+        const code = document.getElementById('couponCode').value.trim();
+        const messageEl = document.getElementById('couponMessage');
+
+        if (!code) {
+            messageEl.innerHTML = '<span class="text-danger">Vui lòng nhập mã giảm giá.</span>';
             return;
         }
-    }
-    
- 
-    currentTotalVND = 0;
-    currentFinalPrice = 0;
-    document.getElementById('totalNights').textContent = '0';
-    document.getElementById('subTotal').textContent = '0 VND';
-    updateFinalPriceUI();
-}
 
-function updateFinalPriceUI() {
-    document.getElementById('discountAmount').textContent = '- ' + currentDiscount.toLocaleString('vi-VN') + ' VND';
-    document.getElementById('finalPrice').textContent = currentFinalPrice.toLocaleString('vi-VN') + ' VND';
-}
-
-
-function resetCoupon() {
-    currentDiscount = 0;
-    currentFinalPrice = currentTotalVND;
-    document.getElementById('couponMessage').innerHTML = '';
-    document.getElementById('discountAmount').classList.remove('text-success');
-    updateFinalPriceUI();
-}
-
-
-function applyCoupon() {
-    const code = document.getElementById('couponCode').value.trim();
-    const messageEl = document.getElementById('couponMessage');
-
-    if (!code) {
-        messageEl.innerHTML = '<span class="text-danger">Vui lòng nhập mã giảm giá.</span>';
-        return;
-    }
-
-    if (currentTotalVND === 0) {
-        messageEl.innerHTML = '<span class="text-danger">Vui lòng chọn ngày nhận/trả phòng trước.</span>';
-        return;
-    }
-
-   
-    const formData = new FormData();
-    formData.append('coupon_code', code);
-    formData.append('total_amount', currentTotalVND);
-    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
-
-   
-    fetch("{% url 'check_coupon' %}", {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
+        if (currentTotalVND === 0) {
+            messageEl.innerHTML = '<span class="text-danger">Vui lòng chọn ngày nhận/trả phòng trước.</span>';
+            return;
         }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-          
-            currentDiscount = data.discount_amount;
-            currentFinalPrice = data.new_total;
-            
-            messageEl.innerHTML = `<span class="text-success"><i class="fas fa-check-circle"></i> ${data.message}</span>`;
-            updateFinalPriceUI();
-        } else {
-          
-            resetCoupon();
-            messageEl.innerHTML = `<span class="text-danger"><i class="fas fa-times-circle"></i> ${data.message}</span>`;
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        messageEl.innerHTML = '<span class="text-danger">Có lỗi xảy ra. Vui lòng thử lại.</span>';
-    });
-}
 
-function validateDates() {
-    const checkIn = document.querySelector('input[name="check_in"]');
-    const checkOut = document.querySelector('input[name="check_out"]');
-    
-    if (!checkIn.value || !checkOut.value) {
-        alert('Vui lòng chọn đầy đủ ngày nhận và ngày trả phòng');
-        return false;
-    }
-    
-    const dateIn = new Date(checkIn.value);
-    const dateOut = new Date(checkOut.value);
-    
-    if (dateOut <= dateIn) {
-        alert('Ngày trả phòng phải sau ngày nhận phòng');
-        return false;
-    }
-    
-    return true;
-}
+        const formData = new FormData();
+        formData.append('coupon_code', code);
+        formData.append('total_amount', currentTotalVND);
+        formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
 
-
-function renderPaypalButton() {
-    
-    const tempBookingData = JSON.parse(localStorage.getItem('temp_booking_data'));
-    
-    if (!tempBookingData) return;
-
-   
-    const totalVND = tempBookingData.total_vnd; 
-    const exchangeRate = 26000;
-    const totalUSD = (totalVND / exchangeRate).toFixed(2);
-
-    
-    document.getElementById('paypal-button-container').innerHTML = '';
-
-    paypal.Buttons({
-        createOrder: function(data, actions) {
-            return fetch('{% url "create_paypal_order" %}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-                },
-                
-                body: JSON.stringify(tempBookingData) 
-            }).then(res => {
-                 if (!res.ok) return res.json().then(err => { throw new Error(err.message); });
-                 return res.json();
-            }).then(order => order.orderID)
-            .catch(err => alert('Lỗi PayPal: ' + err.message));
-        },
-        onApprove: function(data, actions) {
-             return fetch('{% url "capture_paypal_order" %}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-                },
-                body: JSON.stringify({ orderID: data.orderID })
-            }).then(res => res.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    localStorage.removeItem('temp_booking_data');
-                    $('#customerInfoModal').modal('hide');
-                    document.getElementById('bookingDetailLink').href = data.redirect_url;
-                    const successModal = new bootstrap.Modal(document.getElementById('successModal'));
-                    successModal.show();
-                    startCountdown(20, data.redirect_url);
-                } else {
-                    alert('Thanh toán thất bại.');
-                }
-            });
-        }
-    }).render('#paypal-button-container');
-}
-
-
-
-
-function nextStep() {
-    if (!validateDates()) return;
-    
-    const checkInInput = document.querySelector('input[name="check_in"]');
-    const checkOutInput = document.querySelector('input[name="check_out"]');
-    
-    const bookingData = {
-        check_in: checkInInput.value,
-        check_out: checkOutInput.value,
-        guests: document.querySelector('select[name="guests"]').value,
-        room_id: "{{ room.ma_p }}",
-       
-        total_vnd: currentFinalPrice, 
-        original_price: currentTotalVND,
-        discount: currentDiscount
-    };
-
-   
-    const dateIn = new Date(bookingData.check_in);
-    const dateOut = new Date(bookingData.check_out);
-    const nights = Math.ceil((dateOut - dateIn) / (86400000));
-    
-    if (nights <= 0) {
-        alert('Ngày trả phòng phải sau ngày nhận phòng.');
-        return;
-    }
-
-    localStorage.setItem('temp_booking_data', JSON.stringify(bookingData));
-    
-   
-    const formData = new FormData();
-    formData.append('check_in', bookingData.check_in);
-    formData.append('check_out', bookingData.check_out);
-    formData.append('guests', bookingData.guests);
-    formData.append('step', '1');
-    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
-
-    fetch("{% url 'room_detail' room.ma_p %}", {
-        method: 'POST',
-        body: formData,
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-           
-            document.getElementById('finalCheckIn').value = bookingData.check_in;
-            document.getElementById('finalCheckOut').value = bookingData.check_out;
-            document.getElementById('finalGuests').value = bookingData.guests;
-            
-            $('#bookingModal').modal('hide');
-            $('#customerInfoModal').modal('show');
-            
-           
-            if (currentFinalPrice > 0) {
-                renderPaypalButton(); 
+        fetch("{% url 'check_coupon' %}", {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                currentDiscount = data.discount_amount;
+                currentFinalPrice = data.new_total;
+                messageEl.innerHTML = `<span class="text-success"><i class="fas fa-check-circle"></i> ${data.message}</span>`;
+                updateFinalPriceUI();
+            } else {
+                resetCoupon();
+                messageEl.innerHTML = `<span class="text-danger"><i class="fas fa-times-circle"></i> ${data.message}</span>`;
             }
-        } else {
-             alert(data.message);
-        }
-    })
-    .catch(error => console.error(error));
-}
-
-
-
-function prevStep() {
-    const customerInfoModal = bootstrap.Modal.getInstance(document.getElementById('customerInfoModal'));
-    const bookingModal = new bootstrap.Modal(document.getElementById('bookingModal'));
-    
-    customerInfoModal.hide();
-    bookingModal.show();
-}
-
-function handleBookingSubmit(e) {
-    e.preventDefault();
-    
-    const form = e.target;
-    const submitBtn = form.querySelector('button[type="submit"]');
-    const originalBtnText = submitBtn.innerHTML;
-    
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = `
-        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-        Đang xử lý...
-    `;
-
-     
-     const tempBooking = localStorage.getItem('temp_booking_data');
-    const formData = new FormData(form);
-    
-    if (tempBooking) {
-        const bookingData = JSON.parse(tempBooking);
-        formData.set('check_in', bookingData.check_in);
-        formData.set('check_out', bookingData.check_out);
-        formData.set('guests', bookingData.guests);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            messageEl.innerHTML = '<span class="text-danger">Có lỗi xảy ra. Vui lòng thử lại.</span>';
+        });
     }
-    
-    fetch(form.action, {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-        }
-    })
-    .then(async response => {
-        const data = await response.json();
-        if (!response.ok) throw data;
-        return data;
-    })
-    .then(data => {
-        if (data.status === 'success') {
-            localStorage.removeItem('temp_booking_data');
-            
-            const successModal = new bootstrap.Modal(document.getElementById('successModal'));
-            document.getElementById('bookingDetailLink').href = data.redirect_url;
-            successModal.show();
-             
-        startCountdown(20, data.redirect_url);
-        
-        
-        $('#customerInfoModal').modal('hide');
-        } else {
-            throw new Error(data.message || 'Lỗi không xác định');
-        }
-    })
-    .catch(error => {
-        let errorMsg = 'Lỗi hệ thống';
-        if (error.message) errorMsg = error.message;
-        
-        
-        const savedData = localStorage.getItem('temp_booking_data');
-        if (savedData && error.message.includes('session')) {
-            const {check_in, check_out, guests} = JSON.parse(savedData);
-            document.getElementById('finalCheckIn').value = check_in;
-            document.getElementById('finalCheckOut').value = check_out;
-            document.getElementById('finalGuests').value = guests;
-            errorMsg += '. Đã khôi phục thông tin đặt phòng của bạn.';
-        }
-        
-        showErrorModal(errorMsg);
-    })
-    .finally(() => {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = originalText;
-    });
-}
 
-function startCountdown(seconds, redirectUrl) {
-    let count = seconds;
-    const countdownElement = document.getElementById('countdown');
-    const progressBar = document.getElementById('redirectProgress');
-    
-    const timer = setInterval(() => {
-        count--;
-        countdownElement.textContent = count;
-        progressBar.style.width = `${(seconds - count) * (100/seconds)}%`;
+    function validateDates() {
+        const checkIn = document.querySelector('input[name="check_in"]');
+        const checkOut = document.querySelector('input[name="check_out"]');
         
-        if (count <= 0) {
+        if (!checkIn.value || !checkOut.value) {
+            alert('Vui lòng chọn đầy đủ ngày nhận và ngày trả phòng');
+            return false;
+        }
+        
+        const dateIn = new Date(checkIn.value);
+        const dateOut = new Date(checkOut.value);
+        
+        if (dateOut <= dateIn) {
+            alert('Ngày trả phòng phải sau ngày nhận phòng');
+            return false;
+        }
+        return true;
+    }
+
+    function renderPaypalButton() {
+        const tempBookingData = JSON.parse(localStorage.getItem('temp_booking_data'));
+        if (!tempBookingData) return;
+
+        const totalVND = tempBookingData.total_vnd; 
+        const exchangeRate = 26000;
+        
+        document.getElementById('paypal-button-container').innerHTML = '';
+
+        paypal.Buttons({
+            createOrder: function(data, actions) {
+                return fetch('{% url "create_paypal_order" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: JSON.stringify(tempBookingData) 
+                }).then(res => {
+                     if (!res.ok) return res.json().then(err => { throw new Error(err.message); });
+                     return res.json();
+                }).then(order => order.orderID)
+                .catch(err => alert('Lỗi PayPal: ' + err.message));
+            },
+            onApprove: function(data, actions) {
+                 return fetch('{% url "capture_paypal_order" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: JSON.stringify({ orderID: data.orderID })
+                }).then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        localStorage.removeItem('temp_booking_data');
+                        $('#customerInfoModal').modal('hide');
+                        document.getElementById('bookingDetailLink').href = data.redirect_url;
+                        const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                        successModal.show();
+                        startCountdown(20, data.redirect_url);
+                    } else {
+                        alert('Thanh toán thất bại.');
+                    }
+                });
+            }
+        }).render('#paypal-button-container');
+    }
+
+    function nextStep() {
+        if (!validateDates()) return;
+        
+        const checkInInput = document.querySelector('input[name="check_in"]');
+        const checkOutInput = document.querySelector('input[name="check_out"]');
+        
+        const bookingData = {
+            check_in: checkInInput.value,
+            check_out: checkOutInput.value,
+            guests: document.querySelector('select[name="guests"]').value,
+            room_id: "{{ room.ma_p }}",
+            total_vnd: currentFinalPrice, 
+            original_price: currentTotalVND,
+            discount: currentDiscount
+        };
+
+        const dateIn = new Date(bookingData.check_in);
+        const dateOut = new Date(bookingData.check_out);
+        const nights = Math.ceil((dateOut - dateIn) / (86400000));
+        
+        if (nights <= 0) {
+            alert('Ngày trả phòng phải sau ngày nhận phòng.');
+            return;
+        }
+
+        localStorage.setItem('temp_booking_data', JSON.stringify(bookingData));
+        
+        const formData = new FormData();
+        formData.append('check_in', bookingData.check_in);
+        formData.append('check_out', bookingData.check_out);
+        formData.append('guests', bookingData.guests);
+        formData.append('step', '1');
+        formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+
+        fetch("{% url 'room_detail' room.ma_p %}", {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                document.getElementById('finalCheckIn').value = bookingData.check_in;
+                document.getElementById('finalCheckOut').value = bookingData.check_out;
+                document.getElementById('finalGuests').value = bookingData.guests;
+                
+                $('#bookingModal').modal('hide');
+                $('#customerInfoModal').modal('show');
+                
+                if (currentFinalPrice > 0) {
+                    renderPaypalButton(); 
+                }
+            } else {
+                 alert(data.message);
+            }
+        })
+        .catch(error => console.error(error));
+    }
+
+    function prevStep() {
+        const customerInfoModal = bootstrap.Modal.getInstance(document.getElementById('customerInfoModal'));
+        const bookingModal = new bootstrap.Modal(document.getElementById('bookingModal'));
+        customerInfoModal.hide();
+        bookingModal.show();
+    }
+
+    function startCountdown(seconds, redirectUrl) {
+        let count = seconds;
+        const countdownElement = document.getElementById('countdown');
+        const progressBar = document.getElementById('redirectProgress');
+        
+        const timer = setInterval(() => {
+            count--;
+            countdownElement.textContent = count;
+            progressBar.style.width = `${(seconds - count) * (100/seconds)}%`;
+            
+            if (count <= 0) {
+                clearInterval(timer);
+                window.location.href = redirectUrl;
+            }
+        }, 1000);
+        
+        document.getElementById('bookingDetailLink').addEventListener('click', () => {
             clearInterval(timer);
             window.location.href = redirectUrl;
-        }
-    }, 1000);
-    
-    
-    document.getElementById('bookingDetailLink').addEventListener('click', () => {
-        clearInterval(timer);
-        window.location.href = redirectUrl;
-    });
-}
+        });
+    }
 
-
-document.addEventListener('DOMContentLoaded', function() {
-    
-    document.querySelector('input[name="check_in"]').addEventListener('change', calculateTotal);
-    document.querySelector('input[name="check_out"]').addEventListener('change', calculateTotal);
-    
-    
-    // document.querySelector('#customerInfoModal form').addEventListener('submit', handleBookingSubmit);
-    
-    $('#customerInfoModal').on('hidden.bs.modal', function () {
-        const paypalButtonContainer = document.getElementById('paypal-button-container');
-        if (paypalButtonContainer) {
-            paypalButtonContainer.innerHTML = '';
-        }
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelector('input[name="check_in"]').addEventListener('change', calculateTotal);
+        document.querySelector('input[name="check_out"]').addEventListener('change', calculateTotal);
+        
+        $('#customerInfoModal').on('hidden.bs.modal', function () {
+            const paypalButtonContainer = document.getElementById('paypal-button-container');
+            if (paypalButtonContainer) {
+                paypalButtonContainer.innerHTML = '';
+            }
+        });
+        
+        {% if booking_success %}
+        const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+        successModal.show();
+        document.getElementById('bookingDetailLink').href = "{% url 'booking_detail' booking_id %}";
+        {% endif %}
     });
-    
-    {% if booking_success %}
-    const successModal = new bootstrap.Modal(document.getElementById('successModal'));
-    successModal.show();
-    document.getElementById('bookingDetailLink').href = "{% url 'booking_detail' booking_id %}";
-    {% endif %}
-});
 </script>
 {% endblock %}

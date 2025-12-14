@@ -1,0 +1,117 @@
+{% extends 'admin/base.html' %}
+{% load humanize %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active">Quản lý hóa đơn</li>
+{% endblock %}
+
+{% block admin_content %}
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">Danh sách hóa đơn</h6>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3 mb-4">
+            <div class="col-md-3">
+                <input type="text" name="search" class="form-control" placeholder="Mã HD, Tên khách..." value="{{ search_query }}">
+            </div>
+            <div class="col-md-2">
+                <select name="status" class="form-select">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="paid" {% if status == 'paid' %}selected{% endif %}>Đã thanh toán</option>
+                    <option value="unpaid" {% if status == 'unpaid' %}selected{% endif %}>Chưa thanh toán</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <input type="date" name="start_date" class="form-control" value="{{ start_date }}">
+            </div>
+            <div class="col-md-2">
+                <input type="date" name="end_date" class="form-control" value="{{ end_date }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100"><i class="fas fa-filter"></i> Lọc</button>
+            </div>
+        </form>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Mã HD</th>
+                        <th>Khách hàng</th>
+                        <th>Mã Đặt Phòng</th>
+                        <th>Ngày tạo</th>
+                        <th>Tổng tiền</th>
+                        <th>Trạng thái</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for invoice in page_obj %}
+                    <tr>
+                        <td>#{{ invoice.ma_hd }}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                {% if invoice.don_dat_phong.khach_hang.anh_dai_dien %}
+                                    <img src="{{ invoice.don_dat_phong.khach_hang.anh_dai_dien.url }}" class="avatar me-2" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover;">
+                                {% else %}
+                                    <div class="avatar me-2 bg-secondary text-white d-flex justify-content-center align-items-center" style="width: 30px; height: 30px; border-radius: 50%;">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                {% endif %}
+                                {{ invoice.don_dat_phong.khach_hang.ten_kh }}
+                            </div>
+                        </td>
+                        <td><a href="{% url 'process_booking' invoice.don_dat_phong.ma_ddp %}">#{{ invoice.don_dat_phong.ma_ddp }}</a></td>
+                        <td>{{ invoice.ngay_tao|date:"d/m/Y H:i" }}</td>
+                        <td class="fw-bold text-primary">{{ invoice.tong_tien|intcomma }} đ</td>
+                        <td>
+                            {% if invoice.da_thanh_toan %}
+                                <span class="badge bg-success">Đã thanh toán</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">Chưa thanh toán</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'invoice_detail' invoice.ma_hd %}" class="btn btn-sm btn-info text-white" title="Xem chi tiết">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">Chưa có hóa đơn nào</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if page_obj.has_other_pages %}
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}&search={{ search_query }}&status={{ status }}">&laquo;</a>
+                </li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item"><a class="page-link" href="?page={{ num }}&search={{ search_query }}&status={{ status }}">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}&search={{ search_query }}&status={{ status }}">&raquo;</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

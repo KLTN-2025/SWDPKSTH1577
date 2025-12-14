@@ -21,6 +21,10 @@ from django.utils.html import strip_tags
 from .forms import DangKyNhanTinForm 
 from .models import DangKyNhanTin 
 from django.db.models import Avg, Count
+from django.db.models.functions import TruncDate
+from django.db.models import Sum
+from django.utils.dateparse import parse_date
+from collections import defaultdict
 import logging
 logger = logging.getLogger(__name__)
 
@@ -44,29 +48,76 @@ def is_customer(user):
 @login_required
 @user_passes_test(is_admin)
 def admin_dashboard(request):
+    today = timezone.now().date()
     
+    start_date_str = request.GET.get('start_date')
+    end_date_str = request.GET.get('end_date')
+
+    if start_date_str and end_date_str:
+        start_date = parse_date(start_date_str)
+        end_date = parse_date(end_date_str)
+    else:
+        start_date = today - timedelta(days=30)
+        end_date = today
+
+
+   
     total_rooms = Phong.objects.count()
-    total_bookings = DonDatPhong.objects.count()
     total_customers = KhachHang.objects.count()
-    total_services = DichVu.objects.count()
     
+    total_bookings = DonDatPhong.objects.filter(
+        ngay_dat__date__range=[start_date, end_date]
+    ).count()
+
+    total_services_count = DonDatDichVu.objects.filter(
+        ngay_su_dung__range=[start_date, end_date]
+    ).count()
+
+    revenue_query = DonDatPhong.objects.filter(
+        trang_thai='da_checkout',
+        ngay_tra__range=[start_date, end_date]
+    ).values('ngay_tra', 'tong_tien_thuc_te')
+
+    total_revenue = 0
+    revenue_dict = defaultdict(float)
+
+    for item in revenue_query:
+        money = item['tong_tien_thuc_te']
+        day = item['ngay_tra']
+        
+        total_revenue += money
+        revenue_dict[day] += money
+
+    total_revenue = int(total_revenue)
+
+    chart_labels = []
+    chart_data = []
     
+    current_date = start_date
+    while current_date <= end_date:
+        chart_labels.append(current_date.strftime('%d/%m'))
+        amount = revenue_dict.get(current_date, 0)
+        chart_data.append(amount)
+        current_date += timedelta(days=1)
+
     recent_bookings = DonDatPhong.objects.order_by('-ngay_dat')[:5]
-    
-    
     pending_requests = YeuCau.objects.filter(tinh_trang='cho_phan_cong')[:5]
-    
-    
     new_feedbacks = PhanHoi.objects.filter(trang_thai='moi')[:3]
     
     context = {
         'total_rooms': total_rooms,
-        'total_bookings': total_bookings,
+        'total_bookings': total_bookings,    
         'total_customers': total_customers,
-        'total_services': total_services,
+        'total_services': total_services_count, 
         'recent_bookings': recent_bookings,
         'pending_requests': pending_requests,
         'new_feedbacks': new_feedbacks,
+        
+        'total_revenue': total_revenue,
+        'start_date': start_date,
+        'end_date': end_date,
+        'chart_labels': json.dumps(chart_labels),
+        'chart_data': json.dumps(chart_data),
     }
     return render(request, 'admin/dashboard.html', context)
 
@@ -181,11 +232,15 @@ def admin_booking_management(request):
     
     
     if search_query:
-        bookings = bookings.filter(
-            Q(khach_hang__ten_kh__icontains=search_query) | 
-            Q(phong__ten_p__icontains=search_query) |
-            Q(ma_ddp=search_query)
-        )
+      
+        q_object = Q(khach_hang__ten_kh__icontains=search_query) | \
+                   Q(phong__ten_p__icontains=search_query)
+        
+      
+        if search_query.isdigit():
+            q_object |= Q(ma_ddp=search_query)
+            
+        bookings = bookings.filter(q_object)
     if status:
         bookings = bookings.filter(trang_thai=status)
     
@@ -1867,7 +1922,7 @@ def admin_review_management(request):
         )
     
     if room_filter:
-        reviews = reviews.filter(phong__id=room_filter)
+        reviews = reviews.filter(phong__ma_p=room_filter)
 
     paginator = Paginator(reviews, 10)
     page_number = request.GET.get('page')
@@ -1893,3 +1948,68 @@ def delete_review(request, pk):
         return redirect('admin_review_management')
     return render(request, 'admin/delete_review.html', {'review': review})
 
+
+
+
+@login_required
+@user_passes_test(is_admin)
+def admin_invoice_management(request):
+    invoices = HoaDon.objects.all().select_related('don_dat_phong__khach_hang').order_by('-ngay_tao')
+    
+    search_query = request.GET.get('search', '')
+    if search_query:
+        invoices = invoices.filter(
+            Q(ma_hd__icontains=search_query) |
+            Q(don_dat_phong__khach_hang__ten_kh__icontains=search_query) |
+            Q(don_dat_phong__ma_ddp__icontains=search_query)
+        )
+
+    status = request.GET.get('status', '')
+    if status == 'paid':
+        invoices = invoices.filter(da_thanh_toan=True)
+    elif status == 'unpaid':
+        invoices = invoices.filter(da_thanh_toan=False)
+
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    if start_date and end_date:
+        try:
+            invoices = invoices.filter(ngay_tao__range=[start_date, end_date])
+        except ValueError:
+            pass
+
+    paginator = Paginator(invoices, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj,
+        'search_query': search_query,
+        'status': status,
+        'start_date': start_date,
+        'end_date': end_date,
+    }
+    return render(request, 'admin/invoice_management.html', context)
+
+
+@login_required
+@user_passes_test(is_admin)
+def invoice_detail(request, pk):
+    invoice = get_object_or_404(HoaDon, pk=pk)
+    
+    services = DonDatDichVu.objects.filter(don_dat_phong=invoice.don_dat_phong)
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'mark_paid':
+            invoice.da_thanh_toan = True
+            invoice.save()
+            messages.success(request, "Đã cập nhật trạng thái: Đã thanh toán")
+            return redirect('invoice_detail', pk=pk)
+
+    context = {
+        'invoice': invoice,
+        'services': services,
+        'booking': invoice.don_dat_phong,
+    }
+    return render(request, 'admin/invoice_detail.html', context)

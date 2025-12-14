@@ -1,68 +1,118 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                
-                <div class="card-body p-0"> 
-                    
-                    <div class="profile-image-container  position-relative" 
-                         style="width: 100%; height: 250px; overflow: hidden; border-radius:  20px; background-color: #e0e0e0;">
-                         
-                        
-                        <img src="{% if user.avatar %}{{ user.avatar.url }}{% else %}{% static 'images/default-avartar.jpg' %}{% endif %}"
-                             class="rounded-circle position-absolute start-0 ms-4" 
-                             style="width: 180px; height: 180px; object-fit: cover; top: 50%; transform: translateY(-50%); border: 5px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
-                             
-                        
-                        <a href="{% url 'profile_edit' %}" class="btn btn-primary rounded-circle position-absolute" 
-                           style="width: 40px; height: 40px; top: 65%; left: 150px; transform: translateY(-50%); display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-pencil-alt"></i>
-                        </a>
-                    </div>
-                    
-                   
-                    <div class="p-4"> 
-                       <div class="mb-3">
-    <label class="form-label">
-        {% if user.is_staff or user.is_superuser %}
-            Mã quản trị
-        {% else %}
-            Mã khách hàng
-        {% endif %}
-    </label>
-    <input type="text" class="form-control" value="{{ user.id }}" style="background-color: #EEF6FB;" disabled>
-</div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label">Họ</label>
-                                <input type="text" class="form-control" value="{{ user.last_name }}" style="background-color: #EEF6FB;" disabled>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Tên</label>
-                                <input type="text" class="form-control" value="{{ user.first_name }}" style="background-color: #EEF6FB;" disabled>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" class="form-control" value="{{ user.email }}" style="background-color: #EEF6FB;" disabled>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Số điện thoại</label>
-                            <input type="text" class="form-control" value="{{ user.sdt }}" style="background-color: #EEF6FB;" disabled>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Địa chỉ</label>
-                            <textarea class="form-control" rows="1" style="background-color: #EEF6FB;" disabled>{{ user.dia_chi }}</textarea>
+<div class="container py-5">
+    <div class="row gutters-sm">
+        
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body">
+                    <div class="d-flex flex-column align-items-center text-center">
+                        <div class="avatar-container mb-3">
+                            <img src="{% if user.avatar %}{{ user.avatar.url }}{% else %}{% static 'images/default-avartar.jpg' %}{% endif %}" 
+                                 alt="Avatar" 
+                                 class="rounded-circle shadow-sm" 
+                                 style="width: 150px; height: 150px; object-fit: cover; border: 4px solid #fff;">
                         </div>
 
-                        <div class="d-flex justify-content-between mt-4">
-                            <a href="{% url 'change_password' %}" class="btn btn-outline-secondary">Đổi mật khẩu</a>
-                            <a href="{% if user.is_staff or user.is_superuser %}{% url 'admin_dashboard' %}{% else %}{% url 'home' %}{% endif %}" class="btn btn-secondary">Quay lại</a>
+                        <h4 class="mt-2">{{ user.username }}</h4>
+                        <p class="text-muted mb-1">
+                            {% if user.is_staff or user.is_superuser %}
+                                <span class="badge bg-primary">Quản trị viên</span>
+                            {% else %}
+                                <span class="badge bg-info text-dark">Khách hàng</span>
+                            {% endif %}
+                        </p>
+                        <p class="text-muted font-size-sm">{{ user.email }}</p>
+                        
+                        <div class="mt-3 d-grid gap-2 col-12 mx-auto">
+                            <a href="{% url 'profile_edit' %}" class="btn btn-primary rounded-pill">
+                                <i class="fas fa-pencil-alt me-2"></i>Chỉnh sửa hồ sơ
+                            </a>
+                            <a href="{% url 'change_password' %}" class="btn btn-outline-secondary rounded-pill">
+                                <i class="fas fa-key me-2"></i>Đổi mật khẩu
+                            </a>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0 rounded-4 mb-3">
+                <div class="card-header bg-white border-0 pt-4 pb-0">
+                    <h5 class="mb-0 text-primary"><i class="fas fa-id-card me-2"></i>Thông tin chi tiết</h5>
+                </div>
+                <div class="card-body p-4">
+                    
+                    <div class="row mb-3">
+                        <div class="col-sm-3">
+                            <h6 class="mb-0 fw-bold">Mã người dùng</h6>
+                        </div>
+                        <div class="col-sm-9 text-secondary">
+                            #{{ user.id }}
+                        </div>
+                    </div>
+                    <hr class="my-2 opacity-25">
+
+                    <div class="row mb-3">
+                        <div class="col-sm-3">
+                            <h6 class="mb-0 fw-bold">Họ và Tên</h6>
+                        </div>
+                        <div class="col-sm-9 text-secondary">
+                            {{ user.last_name }} {{ user.first_name }}
+                        </div>
+                    </div>
+                    <hr class="my-2 opacity-25">
+
+                    <div class="row mb-3">
+                        <div class="col-sm-3">
+                            <h6 class="mb-0 fw-bold">Email</h6>
+                        </div>
+                        <div class="col-sm-9 text-secondary">
+                            {{ user.email }}
+                        </div>
+                    </div>
+                    <hr class="my-2 opacity-25">
+
+                    <div class="row mb-3">
+                        <div class="col-sm-3">
+                            <h6 class="mb-0 fw-bold">Số điện thoại</h6>
+                        </div>
+                        <div class="col-sm-9 text-secondary">
+                            {% if user.sdt %} {{ user.sdt }} {% else %} <span class="fst-italic text-muted">Chưa cập nhật</span> {% endif %}
+                        </div>
+                    </div>
+                    <hr class="my-2 opacity-25">
+
+                    <div class="row mb-3">
+                        <div class="col-sm-3">
+                            <h6 class="mb-0 fw-bold">Địa chỉ</h6>
+                        </div>
+                        <div class="col-sm-9 text-secondary">
+                            {% if user.dia_chi %} {{ user.dia_chi }} {% else %} <span class="fst-italic text-muted">Chưa cập nhật</span> {% endif %}
+                        </div>
+                    </div>
+                    <hr class="my-2 opacity-25">
+
+                    <div class="row mb-3">
+                        <div class="col-sm-3">
+                            <h6 class="mb-0 fw-bold">Ngày tham gia</h6>
+                        </div>
+                        <div class="col-sm-9 text-secondary">
+                            {{ user.date_joined|date:"d/m/Y" }}
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-sm-12 text-end">
+                            <a href="{% if user.is_staff or user.is_superuser %}{% url 'admin_dashboard' %}{% else %}{% url 'home' %}{% endif %}" class="btn btn-light rounded-pill border px-4">
+                                <i class="fas fa-arrow-left me-2"></i>Quay lại trang chủ
+                            </a>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -70,19 +120,31 @@
 </div>
 
 <style>
-    .profile-image-container {
-        position: relative;
-        background-color: #f8f9fa; 
+    body {
+        background-color: #f7f9fb;
+        color: #1a202c;
+    }
+
+    .card {
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+
+    .text-secondary {
+        color: #4a5568 !important;
+        font-weight: 500;
     }
     
+   
+    .card-body .row:not(:last-child):hover {
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        transition: background-color 0.2s ease;
+    }
     
-    .btn-primary.rounded-circle:hover {
-        transform: translateY(-50%) scale(1.1);
-        transition: all 0.3s ease;
+    .card-body .row {
+        padding: 8px 0;
     }
 </style>
 
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
 {% endblock %}

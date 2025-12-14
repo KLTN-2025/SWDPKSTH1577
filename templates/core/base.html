@@ -618,31 +618,31 @@
 {% block main_content %}
 {% endblock %}
 
-<footer class="footer">
+<footer id="lien-he" class="footer">
     <div class="container">
         <div class="row">
             <div class="col-md-4 mb-4">
                 <h5>CrownePlaza</h5>
                 <p>Địa chỉ: 8 Võ Nguyên Giáp, Street, Ward, Đà Nẵng</p>
-                <p>Điện thoại: 0702 664 640</p>
+                <p>Điện thoại: (+84) 2367 307 999</p>
                 <p>Email: info@crowneplaza.com</p>
             </div>
             <div class="col-md-4 mb-4">
                 <h5>Liên kết</h5>
                 <ul class="list-unstyled">
                     <li><a href="#"><i class="fas fa-chevron-right me-2"></i>Trang chủ</a></li>
-                    <li><a href="#"><i class="fas fa-chevron-right me-2"></i>Giới thiệu</a></li>
-                    <li><a href="#"><i class="fas fa-chevron-right me-2"></i>Dịch vụ</a></li>
-                    <li><a href="#"><i class="fas fa-chevron-right me-2"></i>Liên hệ</a></li>
+                    <li><a href="{% url 'home' %}#gioi-thieu"><i class="fas fa-chevron-right me-2"></i>Giới thiệu</a></li>
+                    <li><a href="{% url 'service_list' %}"><i class="fas fa-chevron-right me-2"></i>Dịch vụ</a></li>
+                    <li><a href="{% url 'home' %}#lien-he"><i class="fas fa-chevron-right me-2"></i>Liên hệ</a></li>
                 </ul>
             </div>
             <div class="col-md-4 mb-4">
                 <h5>Kết nối với chúng tôi</h5>
                 <div class="social-links">
-                    <a href="https://www.facebook.com/aanh.tuan.17926" class="me-2"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://www.facebook.com/aanh.tuan.17926" class="me-2"><i class="fab fa-twitter"></i></a>
-                    <a href="https://www.facebook.com/aanh.tuan.17926" class="me-2"><i class="fab fa-instagram"></i></a>
-                    <a href="https://www.facebook.com/aanh.tuan.17926" class="me-2"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://www.facebook.com/crowneplazadanangcitycentre/" class="me-2"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://x.com/guest_res" class="me-2"><i class="fab fa-twitter"></i></a>
+                    <a href="https://www.instagram.com/crowneplazadncc/?igsh=OGJ2YTh5dzNhMGl3#" class="me-2"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.linkedin.com/company/crowneplazadanangcitycentre/" class="me-2"><i class="fab fa-linkedin-in"></i></a>
                 </div>
                 <div class="mt-3">
                     <p>Đăng ký nhận tin khuyến mãi</p>
@@ -660,8 +660,8 @@
                 <p class="mb-0">&copy; 2025 CrownePlaza. All rights reserved.</p>
             </div>
             <div class="col-md-6 text-md-end">
-                <a href="#" class="me-3">Chính sách bảo mật</a>
-                <a href="#">Điều khoản sử dụng</a>
+                <a href="https://danang.crowneplaza.com/privacy-policy/" class="me-3">Privacy Policy</a>
+                <a href="https://danang.crowneplaza.com/cookies-policy/">Cookie Policy</a>
             </div>
         </div>
     </div>

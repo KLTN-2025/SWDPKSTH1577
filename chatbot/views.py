@@ -54,7 +54,7 @@ safety_settings = [
 model = None
 try:
     model = genai.GenerativeModel(
-        model_name='gemini-2.0-flash',
+        model_name='gemini-2.5-flash',
         safety_settings=safety_settings,
         system_instruction=SYSTEM_PROMPT
     )

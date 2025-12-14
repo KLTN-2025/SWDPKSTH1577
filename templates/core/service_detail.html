@@ -1,114 +1,243 @@
 {% extends 'core/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+    {{ block.super }}
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+      
+        :root {
+            --lux-gold: #c5a880;
+            --lux-gold-hover: #b09060;
+            --lux-dark: #101820;
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .service-detail-wrapper {
+            font-family: var(--font-body);
+            color: #4a4a4a;
+            background-color: #fcfbf9;
+        }
+
+        .service-detail-wrapper h2, 
+        .service-detail-wrapper h5 {
+            font-family: var(--font-heading);
+            color: var(--lux-dark);
+        }
+
+       
+        .service-detail-img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+      
+        .card-lux-detail {
+            border: none;
+            background: #fff;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            border-radius: 8px;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .card-lux-header {
+            background-color: var(--lux-dark);
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .card-lux-body {
+            padding: 30px;
+        }
+
+    
+        .form-label-lux {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .form-control-lux {
+            border: 1px solid #e0e0e0;
+            padding: 12px;
+            border-radius: 4px;
+            font-family: var(--font-body);
+        }
+
+        .form-control-lux:focus {
+            border-color: var(--lux-gold);
+            box-shadow: none;
+        }
+
+        .form-control-plaintext-lux {
+            font-weight: 600;
+            color: var(--lux-dark);
+            padding-left: 0;
+            font-size: 1.1rem;
+        }
+
+       
+        .btn-lux-full {
+            background-color: var(--lux-gold);
+            color: #fff;
+            width: 100%;
+            padding: 15px;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 1px;
+            border: none;
+            transition: all 0.3s;
+        }
+
+        .btn-lux-full:hover {
+            background-color: var(--lux-dark);
+            color: #fff;
+        }
+
+       
+        .badge-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .badge-active {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+        .badge-inactive {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+       
+        .price-highlight {
+            font-size: 1.5rem;
+            color: var(--lux-gold);
+            font-family: var(--font-heading);
+            font-weight: 700;
+        }
+
+      
+        .desc-box {
+            border-left: 4px solid var(--lux-gold);
+            padding-left: 20px;
+            background-color: #fff;
+            padding: 20px;
+            font-style: italic;
+            color: #666;
+            line-height: 1.8;
+        }
+    </style>
+{% endblock %}
 
 {% block main_content %}
-<section class="py-5">
-    <div class="container">
-        
-        <div class="text-center mb-4">
-            <img src="{{ service.anh_dai_dien.url }}" class="img-fluid rounded" 
-                 alt="{{ service.ten_dv }}" style="max-height: 200px; width: auto;" >
-        </div>
+<div class="service-detail-wrapper">
+    <section class="py-5">
+        <div class="container">
+            <div class="mb-4">
+                <a href="{% url 'service_list' %}" class="text-decoration-none text-muted">
+                    <i class="fas fa-arrow-left me-2"></i> Quay lại danh sách
+                </a>
+            </div>
 
-        
-        <h2 class="text-center mb-4">{{ service.ten_dv }}</h2>
-
-        
-        <div class="row">
-            
-            <div class="col-md-6">
-                <div class="card mb-4">
-                    <div class="card-body">
-                        
-                        <div class="mb-3 row">
-                            <label class="col-sm-4 col-form-label fw-bold">Mã dịch vụ</label>
-                            <div class="col-sm-8">
-                                <input type="text" class="form-control-plaintext" 
-                                       value="DV000{{ service.ma_dv }}" style="background-color: #EEF6FB;" readonly>
-                            </div>
+            <div class="row g-5">
+                <div class="col-lg-7">
+                    <div class="mb-4">
+                        <img src="{{ service.anh_dai_dien.url }}" class="service-detail-img" alt="{{ service.ten_dv }}">
+                    </div>
+                    
+                    <div class="mb-5">
+                        <h2 class="fw-bold mb-3 display-5">{{ service.ten_dv }}</h2>
+                        <div class="d-flex align-items-center mb-4">
+                            <span class="badge-status {% if service.hoat_dong %}badge-active{% else %}badge-inactive{% endif %} me-3">
+                                {% if service.hoat_dong %}Đang hoạt động{% else %}Ngừng hoạt động{% endif %}
+                            </span>
+                            <span class="text-muted small">Mã dịch vụ: #DV000{{ service.ma_dv }}</span>
                         </div>
-
                         
-                        <div class="mb-3 row">
-                            <label class="col-sm-4 col-form-label fw-bold">Giá dịch vụ</label>
-                            <div class="col-sm-8">
-                                <input type="text" class="form-control-plaintext format-price" 
-                                       value="{{ service.phi_dv|floatformat:0 }} VND" style="background-color: #EEF6FB;" readonly>
-                            </div>
-                        </div>
-
-                        
-                        <div class="mb-3 row">
-                            <label class="col-sm-4 col-form-label fw-bold">Trạng thái</label>
-                            <div class="col-sm-8">
-                                <input type="text" class="form-control-plaintext" 
-                                       value="{% if service.hoat_dong %}Đang hoạt động{% else %}Ngừng hoạt động{% endif %}" style="background-color: #EEF6FB;" readonly>
-                            </div>
+                        <div class="desc-box shadow-sm">
+                            <h5 class="mb-3 text-gold">Mô tả chi tiết</h5>
+                            {{ service.mo_ta|linebreaks }}
                         </div>
                     </div>
                 </div>
-            </div>
 
-            
-            <div class="col-md-6">
-                <div class="card mb-4">
-                    <div class="card-body">
-                        
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Mô tả dịch vụ</label>
-                            <div class="border p-3  rounded" style="background-color: #EEF6FB;" >
-                                {{ service.mo_ta|linebreaks }}
-                            </div>
+                <div class="col-lg-5">
+                    <div class="card-lux-detail sticky-top" style="top: 100px;">
+                        <div class="card-lux-header">
+                            <h4 class="mb-0 text-white" style="font-family: 'Playfair Display', serif;">Đặt Dịch Vụ</h4>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                        <div class="card-lux-body">
+                            <div class="text-center mb-4 pb-4 border-bottom">
+                                <span class="d-block text-muted text-uppercase small mb-1">Giá dịch vụ</span>
+                                <span class="price-highlight format-price">{{ service.phi_dv|floatformat:0 }} VND</span>
+                            </div>
 
-        
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-body">
-                        {% if user.is_authenticated and has_active_booking %}
-                        <h5 class="card-title text-center mb-4">Đặt dịch vụ</h5>
-                        <form method="post" action="{% url 'service_detail' service.ma_dv %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="action" value="book_service">
-                            
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Ngày sử dụng</label>
-                                    <input type="date" name="service_date" class="form-control" required>
+                            {% if user.is_authenticated and has_active_booking %}
+                                <form method="post" action="{% url 'service_detail' service.ma_dv %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="book_service">
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label-lux">Ngày sử dụng</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-white border-end-0"><i class="far fa-calendar text-muted"></i></span>
+                                            <input type="date" name="service_date" class="form-control form-control-lux border-start-0 ps-0" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label-lux">Giờ sử dụng</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-white border-end-0"><i class="far fa-clock text-muted"></i></span>
+                                            <input type="time" name="service_time" class="form-control form-control-lux border-start-0 ps-0" required>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <label class="form-label-lux">Số lượng</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-white border-end-0"><i class="fas fa-users text-muted"></i></span>
+                                            <input type="number" name="quantity" class="form-control form-control-lux border-start-0 ps-0" min="1" value="1" required>
+                                        </div>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn-lux-full shadow-sm">
+                                        Xác nhận đặt <i class="fas fa-check ms-2"></i>
+                                    </button>
+                                </form>
+
+                            {% elif user.is_authenticated %}
+                                <div class="alert alert-light border border-warning text-center" role="alert">
+                                    <i class="fas fa-exclamation-circle text-warning fa-2x mb-3 d-block"></i>
+                                    <p class="mb-2 small text-muted">Quý khách cần có phòng đang lưu trú để sử dụng dịch vụ này.</p>
+                                    <a href="{% url 'room_search' %}" class="btn btn-outline-dark btn-sm text-uppercase fw-bold mt-2">Đặt phòng ngay</a>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Giờ sử dụng</label>
-                                    <input type="time" name="service_time" class="form-control" required>
+
+                            {% else %}
+                                <div class="alert alert-light border border-secondary text-center" role="alert">
+                                    <i class="fas fa-lock text-secondary fa-2x mb-3 d-block"></i>
+                                    <p class="mb-2 small text-muted">Vui lòng đăng nhập để đặt dịch vụ.</p>
+                                    <a href="{% url 'login' %}" class="btn btn-dark btn-sm text-uppercase fw-bold mt-2 w-100">Đăng nhập</a>
                                 </div>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label class="form-label">Số lượng</label>
-                                <input type="number" name="quantity" class="form-control" min="1" value="1" required>
-                            </div>
-                            
-                            <div class="text-center">
-                                <button type="submit" class="btn btn-primary px-4">Đặt dịch vụ</button>
-                            </div>
-                        </form>
-                        {% elif user.is_authenticated %}
-                        <div class="alert alert-info" style="background-color: #EEF6FB;">
-                            Bạn cần có đặt phòng đang hoạt động để sử dụng dịch vụ này.
-                            <a href="{% url 'room_search' %}" class="alert-link">Đặt phòng ngay</a>
+                            {% endif %}
                         </div>
-                        {% else %}
-                        <div class="alert alert-warning">
-                            Vui lòng <a href="{% url 'login' %}" class="alert-link">đăng nhập</a> để đặt dịch vụ.
-                        </div>
-                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
+</div>
 {% endblock %}

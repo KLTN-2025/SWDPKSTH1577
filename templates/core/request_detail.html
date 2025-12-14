@@ -1,257 +1,397 @@
 {% extends 'core/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+    {{ block.super }}
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+    
+        :root {
+            --lux-gold: #c5a880;
+            --lux-gold-hover: #b09060;
+            --lux-dark: #101820;
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .request-page-wrapper {
+            font-family: var(--font-body);
+            color: #4a4a4a;
+            background-color: #fcfbf9;
+            min-height: 80vh;
+        }
+
+        h3, h4, h5 {
+            font-family: var(--font-heading);
+            color: var(--lux-dark);
+        }
+
+     
+        .card-lux {
+            border: none;
+            background: #fff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .card-lux-header {
+            background-color: var(--lux-dark);
+            color: #fff;
+            padding: 15px 20px;
+            border-bottom: 3px solid var(--lux-gold);
+        }
+        
+        .card-lux-header h4, .card-lux-header h3 {
+            color: #fff;
+            margin: 0;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card-lux-body {
+            padding: 25px;
+        }
+
+      
+        .form-control-lux, .form-select-lux, .input-group-text-lux {
+            border: 1px solid #eee;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-family: var(--font-body);
+        }
+        
+        .input-group-text-lux {
+            background-color: #f8f9fa;
+            border-right: none;
+            color: var(--lux-gold);
+        }
+        
+        .form-control-lux, .form-select-lux {
+            border-left: none;
+        }
+
+        .form-control-lux:focus, .form-select-lux:focus {
+            border-color: var(--lux-gold);
+            box-shadow: none;
+            border-left: none;
+        }
+
+        .form-label-lux {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--lux-dark);
+            margin-bottom: 8px;
+        }
+
+       
+        .btn-lux-primary {
+            background-color: var(--lux-dark);
+            color: #fff;
+            border: 1px solid var(--lux-dark);
+            padding: 10px 25px;
+            text-transform: uppercase;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+        .btn-lux-primary:hover {
+            background-color: var(--lux-gold);
+            border-color: var(--lux-gold);
+            color: #fff;
+        }
+
+        .btn-lux-outline {
+            background-color: #fff;
+            color: #666;
+            border: 1px solid #ddd;
+            padding: 10px 25px;
+            text-transform: uppercase;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+        .btn-lux-outline:hover {
+            border-color: var(--lux-gold);
+            color: var(--lux-gold);
+        }
+
+     
+        .table-luxury {
+            margin-bottom: 0;
+        }
+        .table-luxury thead th {
+            background-color: transparent;
+            color: var(--lux-gold);
+            font-family: var(--font-heading);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            border-bottom: 2px solid #eee;
+            padding: 15px;
+        }
+        .table-luxury td {
+            padding: 15px;
+            vertical-align: middle;
+            border-bottom: 1px solid #f9f9f9;
+            color: #555;
+        }
+
+     
+        .badge-lux {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+        }
+        .badge-warning { background-color: #fff3cd; color: #856404; }
+        .badge-info { background-color: #cff4fc; color: #055160; }
+        .badge-primary { background-color: #cfe2ff; color: #084298; }
+        .badge-success { background-color: #d1e7dd; color: #0f5132; }
+        .badge-danger { background-color: #f8d7da; color: #842029; }
+
+     
+        .info-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        .info-label {
+            font-weight: 600;
+            color: var(--lux-dark);
+            display: block;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        .info-value {
+            color: #666;
+        }
+    </style>
+{% endblock %}
 
 {% block main_content %}
-<div class="container py-5">
-    <div class="row">
-        
-        <div class="col-lg-8">
-            <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h4>Thông tin đơn đặt phòng #{{ booking.ma_ddp }}</h4>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p><strong>Phòng:</strong> {{ booking.phong.ten_p }}</p>
-                            <p><strong>Loại phòng:</strong> {{ booking.phong.get_loai_p_display }}</p>
-                            <p><strong>Ngày nhận:</strong> {{ booking.ngay_nhan|date:"d/m/Y" }}</p>
+<div class="request-page-wrapper py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                
+                <div class="card-lux">
+                    <div class="card-lux-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4><i class="fas fa-info-circle me-2 text-gold"></i> Thông tin đơn #{{ booking.ma_ddp }}</h4>
+                            <span class="badge 
+                                {% if booking.trang_thai == 'da_xac_nhan' %}bg-success
+                                {% elif booking.trang_thai == 'da_checkin' %}bg-primary
+                                {% elif booking.trang_thai == 'da_checkout' %}bg-secondary
+                                {% else %}bg-danger{% endif %} text-white" style="font-size: 0.7rem;">
+                                {{ booking.get_trang_thai_display }}
+                            </span>
                         </div>
-                        <div class="col-md-6">
-                            <p><strong>Ngày trả:</strong> {{ booking.ngay_tra|date:"d/m/Y" }}</p>
-                            <p><strong>Số người:</strong> {{ booking.so_luong_nguoi }}</p>
-                            <p><strong>Trạng thái:</strong> 
-                                <span class="badge 
-                                    {% if booking.trang_thai == 'da_xac_nhan' %}bg-success
-                                    {% elif booking.trang_thai == 'da_checkin' %}bg-primary
-                                    {% elif booking.trang_thai == 'da_checkout' %}bg-secondary
-                                    {% else %}bg-danger{% endif %}">
-                                    {{ booking.get_trang_thai_display }}
-                                </span>
-                            </p>
+                    </div>
+                    <div class="card-lux-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="info-item">
+                                    <span class="info-label">Phòng nghỉ</span>
+                                    <span class="info-value fw-bold">{{ booking.phong.ten_p }}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Ngày nhận phòng</span>
+                                    <span class="info-value"><i class="far fa-calendar-check me-2 text-gold"></i>{{ booking.ngay_nhan|date:"d/m/Y" }}</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="info-item">
+                                    <span class="info-label">Loại phòng</span>
+                                    <span class="info-value">{{ booking.phong.get_loai_p_display }}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Ngày trả phòng</span>
+                                    <span class="info-value"><i class="far fa-calendar-times me-2 text-gold"></i>{{ booking.ngay_tra|date:"d/m/Y" }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-lux">
+                    <div class="card-lux-header">
+                        <h4><i class="fas fa-plus-circle me-2 text-gold"></i> Tạo yêu cầu mới</h4>
+                    </div>
+                    <div class="card-lux-body">
+                        <form method="post" class="needs-validation" novalidate>
+                            {% csrf_token %}
+                            
+                            {% if form.non_field_errors %}
+                            <div class="alert alert-danger rounded-0 border-0 border-start border-4 border-danger shadow-sm mb-4">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-exclamation-circle me-2"></i>
+                                    <div>{{ form.non_field_errors }}</div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="mb-4">
+                                <label class="form-label-lux">Loại yêu cầu <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text input-group-text-lux"><i class="fas fa-tag"></i></span>
+                                    {{ form.loai_yc }}
+                                </div>
+                                {% if form.loai_yc.errors %}
+                                <div class="text-danger small mt-1">{{ form.loai_yc.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label-lux">Nội dung yêu cầu <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text input-group-text-lux align-items-start pt-3"><i class="fas fa-align-left"></i></span>
+                                    {{ form.noi_dung_yc }}
+                                </div>
+                                {% if form.noi_dung_yc.errors %}
+                                <div class="text-danger small mt-1">{{ form.noi_dung_yc.errors }}</div>
+                                {% endif %}
+                                <small class="text-muted fst-italic mt-1 d-block">Vui lòng mô tả chi tiết yêu cầu của bạn (tối thiểu 20 ký tự)</small>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label-lux">Ghi chú thêm</label>
+                                <div class="input-group">
+                                    <span class="input-group-text input-group-text-lux"><i class="fas fa-sticky-note"></i></span>
+                                    {{ form.ghi_chu }}
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                                <button type="reset" class="btn btn-lux-outline">
+                                    <i class="fas fa-undo me-1"></i> Nhập lại
+                                </button>
+                                <button type="submit" class="btn btn-lux-primary">
+                                    <i class="fas fa-paper-plane me-1"></i> Gửi yêu cầu
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card-lux">
+                    <div class="card-lux-header">
+                        <h4><i class="fas fa-history me-2 text-gold"></i> Lịch sử yêu cầu</h4>
+                    </div>
+                    <div class="card-lux-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-luxury table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="ps-4">Thời gian</th>
+                                        <th>Loại yêu cầu</th>
+                                        <th>Nội dung</th>
+                                        <th class="text-center">Tình trạng</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for req in requests %}
+                                    <tr>
+                                        <td class="ps-4 text-muted small">{{ req.ngay_tao|date:"H:i d/m/Y" }}</td>
+                                        <td class="fw-bold text-dark">{{ req.get_loai_yc_display }}</td>
+                                        <td style="max-width: 250px;">
+                                            <span class="d-inline-block text-truncate w-100" title="{{ req.noi_dung_yc }}">
+                                                {{ req.noi_dung_yc }}
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge-lux 
+                                                {% if req.tinh_trang == 'cho_phan_cong' %}badge-warning
+                                                {% elif req.tinh_trang == 'da_phan_cong' %}badge-info
+                                                {% elif req.tinh_trang == 'dang_xu_ly' %}badge-primary
+                                                {% elif req.tinh_trang == 'da_xu_ly' %}badge-success
+                                                {% else %}badge-danger{% endif %}">
+                                                {{ req.get_tinh_trang_display }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="4" class="text-center py-5 text-muted">
+                                            <i class="fas fa-inbox fa-3x mb-3 opacity-25"></i>
+                                            <p>Chưa có yêu cầu nào được gửi.</p>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
 
-            
-            <div class="card mb-4 shadow-lg border-0">
-                <div class="card-header bg-gradient-info text-white py-3">
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-plus-circle fa-2x me-3"></i>
-                        <div>
-                            <h3 class="h5 mb-0">Tạo yêu cầu mới</h3>
-                            <p class="small mb-0 opacity-75">Điền đầy đủ thông tin yêu cầu của bạn</p>
-                        </div>
+            <div class="col-lg-4">
+                
+                <div class="card-lux sticky-top" style="top: 100px;">
+                    <div class="card-lux-header">
+                        <h4>Thông tin phòng</h4>
                     </div>
-                </div>
-                <div class="card-body p-4">
-                    <form method="post" class="needs-validation" novalidate >
-                        {% csrf_token %}
+                    <div class="card-lux-body">
+                        <h5 class="mb-3">{{ booking.phong.ten_p }}</h5>
                         
-                        
-                        {% if form.non_field_errors %}
-                        <div class="alert alert-danger rounded-lg shadow-sm">
-                            <div class="d-flex">
-                                <i class="fas fa-exclamation-circle me-2 mt-1"></i>
-                                <div>{{ form.non_field_errors }}</div>
-                            </div>
-                        </div>
-                        {% endif %}
-                        
-                        
-                        <div class="mb-4">
-                            <label class="form-label fw-bold text-dark mb-2">Loại yêu cầu <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light"><i class="fas fa-tag text-info"></i></span>
-                                {{ form.loai_yc }}
-                            </div>
-                            {% if form.loai_yc.errors %}
-                            <div class="invalid-feedback d-block">
-                                <i class="fas fa-exclamation-circle me-1"></i>
-                                {{ form.loai_yc.errors }}
-                            </div>
-                            {% endif %}
+                        <div class="info-item">
+                            <span class="info-label">Giá phòng</span>
+                            <span class="info-value format-price fw-bold text-gold">{{ booking.phong.gia|floatformat:0 }} VNĐ/ngày</span>
                         </div>
                         
-                        
-                        <div class="mb-4">
-                            <label class="form-label fw-bold text-dark mb-2">Nội dung yêu cầu <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light align-items-start pt-2"><i class="fas fa-align-left text-info"></i></span>
-                                {{ form.noi_dung_yc }}
-                            </div>
-                            {% if form.noi_dung_yc.errors %}
-                            <div class="invalid-feedback d-block">
-                                <i class="fas fa-exclamation-circle me-1"></i>
-                                {{ form.noi_dung_yc.errors }}
-                            </div>
-                            {% endif %}
-                            <small class="text-muted">Mô tả chi tiết yêu cầu của bạn (tối thiểu 20 ký tự)</small>
+                        <div class="info-item">
+                            <span class="info-label">Sức chứa</span>
+                            <span class="info-value">{{ booking.phong.suc_chua }} người</span>
                         </div>
                         
-                        
-                        <div class="mb-4">
-                            <label class="form-label fw-bold text-dark mb-2">Ghi chú</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light"><i class="fas fa-sticky-note text-info"></i></span>
-                                {{ form.ghi_chu }}
+                        <div class="mt-4">
+                            <span class="info-label mb-2"><i class="fas fa-concierge-bell me-2 text-gold"></i>Tiện ích</span>
+                            <div class="text-muted small bg-light p-3 rounded fst-italic">
+                                {{ booking.phong.tien_ich|linebreaks }}
                             </div>
-                            <small class="text-muted">Thông tin bổ sung (nếu có)</small>
                         </div>
                         
-                        
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                            <button type="reset" class="btn btn-outline-secondary me-md-2">
-                                <i class="fas fa-undo me-1"></i> Nhập lại
-                            </button>
-                            <button type="submit" class="btn btn-gradient-primary px-4" >
-                                <i class="fas fa-paper-plane me-1"></i> Gửi yêu cầu
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <style>
-                
-                .bg-gradient-info {
-                    background: linear-gradient(135deg, #17a2b8 0%, #5bc0de 100%);
-                }
-                
-                .btn-gradient-primary {
-                    background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
-                    color: white;
-                    border: none;
-                    transition: all 0.3s ease;
-                }
-                
-                .btn-gradient-primary:hover {
-                    
-                    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-                }
-                
-                .form-control, .form-select {
-                    border-radius: 0.375rem;
-                    border: 1px solid #e0e0e0;
-                    padding: 0.5rem 1rem;
-                    transition: all 0.3s ease;
-                }
-                
-                .form-control:focus, .form-select:focus {
-                    border-color: #86b7fe;
-                    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-                }
-                
-                .input-group-text {
-                    background-color: #f8f9fa;
-                    border-right: none;
-                }
-                
-                textarea.form-control {
-                    min-height: 120px;
-                    resize: vertical;
-                }
-                textarea{
-                    resize: none;
-                    border-radius: 5px;
-                }
-                
-                .card {
-                    border-radius: 0.5rem;
-                    overflow: hidden;
-                }
-                
-                .card-header {
-                    border-bottom: none;
-                }
-                
-                .invalid-feedback {
-                    color: #dc3545;
-                    font-size: 0.875em;
-                    margin-top: 0.25rem;
-                }
-            </style>
-
-            
-            <div class="card">
-                <div class="card-header bg-secondary text-white">
-                    <h4>Danh sách các yêu cầu đã gửi</h4>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Thời gian</th>
-                                    <th>Phòng</th>
-                                    <th>Loại yêu cầu</th>
-                                    <th>Nội dung</th>
-                                    <th>Tình trạng</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for req in requests %}
-                                <tr>
-                                    <td>{{ req.ngay_tao|date:"H:i d/m/Y" }}</td>
-                                    <td>{{ req.phong.ten_p }}</td>
-                                    <td>{{ req.get_loai_yc_display }}</td>
-                                    <td>{{ req.noi_dung_yc|truncatechars:50 }}</td>
-                                    <td>
-                                        <span class="badge 
-                                            {% if req.tinh_trang == 'cho_phan_cong' %}bg-warning
-                                            {% elif req.tinh_trang == 'da_phan_cong' %}bg-info
-                                            {% elif req.tinh_trang == 'dang_xu_ly' %}bg-primary
-                                            {% elif req.tinh_trang == 'da_xu_ly' %}bg-success
-                                            {% else %}bg-danger{% endif %}">
-                                            {{ req.get_tinh_trang_display }}
-                                        </span>
-                                    </td>
-                                </tr>
+                        <div class="mt-4 pt-3 border-top">
+                            <span class="info-label mb-2"><i class="fas fa-cocktail me-2 text-gold"></i>Dịch vụ đã đặt</span>
+                            <ul class="list-unstyled mt-2">
+                                {% for service in booking.dondatdichvu_set.all %}
+                                <li class="mb-2 d-flex justify-content-between align-items-center text-muted small">
+                                    <span><i class="fas fa-check text-success me-2"></i>{{ service.dich_vu.ten_dv }}</span>
+                                    <span>{{ service.ngay_su_dung|date:"d/m" }}</span>
+                                </li>
                                 {% empty %}
-                                <tr>
-                                    <td colspan="4" class="text-center">Chưa có yêu cầu nào</td>
-                                </tr>
+                                <li class="text-muted small fst-italic">Chưa có dịch vụ nào</li>
                                 {% endfor %}
-                            </tbody>
-                        </table>
+                            </ul>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        
-        <div class="col-lg-4">
-            <div class="card mb-4">
-                <div class="card-header bg-success text-white">
-                    <h4>Thông tin phòng</h4>
-                </div>
-                <div class="card-body">
-                    <h5>{{ booking.phong.ten_p }}</h5>
-                    <p><strong>Loại phòng:</strong> {{ booking.phong.get_loai_p_display }}</p>
-                    <p><strong>Giá phòng:</strong> <span class="format-price">{{ booking.phong.gia|floatformat:0 }} VNĐ/ngày</span></p>
-                    <p><strong>Sức chứa:</strong> {{ booking.phong.suc_chua }} người</p>
-                    
-                    <h5 class="mt-4">Tiện ích</h5>
-                    <div class="room-amenities">
-                        {{ booking.phong.tien_ich|linebreaks }}
-                    </div>
-                    
-                    <h5 class="mt-4">Dịch vụ phòng</h5>
-                    <ul class="list-group list-group-flush">
-                        {% for service in booking.dondatdichvu_set.all %}
-                        <li class="list-group-item">
-                            {{ service.dich_vu.ten_dv }} - {{ service.ngay_su_dung|date:"d/m/Y" }}
-                        </li>
-                        {% empty %}
-                        <li class="list-group-item">Không có dịch vụ nào</li>
-                        {% endfor %}
-                    </ul>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<script>
 
+    document.addEventListener("DOMContentLoaded", function() {
+        const textareas = document.querySelectorAll('textarea.form-control');
+        textareas.forEach(ta => {
+            ta.classList.add('form-control-lux');
+            ta.rows = 4;
+        });
+        const inputs = document.querySelectorAll('input.form-control, select.form-select');
+        inputs.forEach(inp => {
+            inp.classList.add('form-control-lux');
+            if(inp.tagName === 'SELECT') inp.classList.add('form-select-lux');
+        });
+    });
+</script>
 {% endblock %}
-
-

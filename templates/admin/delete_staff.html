@@ -1,11 +1,33 @@
 {% extends 'admin/base.html' %}
 
-{% block content %}
-<h2>Xác nhận xóa nhân viên</h2>
-<p>Bạn có chắc chắn muốn xóa nhân viên {{ staff.ten_nv }}?</p>
-<form method="post">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-danger">Xóa</button>
-    <a href="{% url 'admin_staff_management' %}" class="btn btn-secondary">Hủy</a>
-</form>
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'admin_staff_management' %}">Quản lý nhân viên</a></li>
+<li class="breadcrumb-item active">Xóa nhân viên</li>
+{% endblock %}
+
+<!--Trang xóa nhân viên-->
+{% block admin_content %}
+<!--Container xóa nhân viên-->
+<div class="container">
+    <div class="card shadow border-danger">
+        <!--Header xóa nhân viên-->
+        <div class="card-header bg-danger text-white">
+            Xác nhận xóa
+        </div>
+        <!--Body xóa nhân viên-->
+        <div class="card-body">
+            <!--Thông báo xóa nhân viên-->
+            <p>Bạn có chắc chắn muốn xóa nhân viên <strong>{{ staff.ten_nv }}</strong> không?</p>
+            <!--Form xóa nhân viên-->
+            <form method="post" class="d-flex gap-2">
+                <!--Token CSRF-->
+                {% csrf_token %}
+                <!--Nút xóa nhân viên-->
+                <button type="submit" class="btn btn-danger">Xóa nhân viên</button>
+                <!--Nút hủy-->
+                <a href="{% url 'admin_staff_management' %}" class="btn btn-secondary">Hủy</a>
+            </form>
+        </div>
+    </div>
+</div>  
 {% endblock %}

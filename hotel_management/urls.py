@@ -85,6 +85,8 @@ urlpatterns = [
     path('admin-dashboard/coupons/<int:pk>/delete/', core_views.delete_coupon, name='delete_coupon'),
     path('admin-dashboard/reviews/', core_views.admin_review_management, name='admin_review_management'),
     path('admin-dashboard/reviews/<int:pk>/delete/', core_views.delete_review, name='delete_review'),
+    path('admin-dashboard/invoices/', core_views.admin_invoice_management, name='admin_invoice_management'),
+    path('admin-dashboard/invoices/<int:pk>/', core_views.invoice_detail, name='invoice_detail'),
     path('chatbot/', include('chatbot.urls')),
     path('api/hot-rooms/', core_views.get_hot_rooms, name='hot_rooms_api'),
     path('create-paypal-order/', core_views.create_paypal_order, name='create_paypal_order'),

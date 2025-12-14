@@ -1,218 +1,388 @@
 {% extends 'core/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+    {{ block.super }}
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+       
+        :root {
+            --lux-gold: #c5a880;
+            --lux-gold-hover: #b09060;
+            --lux-dark: #101820;
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .my-bookings-wrapper {
+            font-family: var(--font-body);
+            color: #4a4a4a;
+            background-color: #fcfbf9;
+            min-height: 80vh;
+        }
+
+        .page-title {
+            font-family: var(--font-heading);
+            color: var(--lux-dark);
+            font-weight: 700;
+        }
+
+      
+        .btn-lux-primary {
+            background-color: var(--lux-dark);
+            color: #fff;
+            border: 1px solid var(--lux-dark);
+            padding: 10px 25px;
+            text-transform: uppercase;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+        .btn-lux-primary:hover {
+            background-color: var(--lux-gold);
+            border-color: var(--lux-gold);
+            color: #fff;
+        }
+
+        .btn-lux-outline-secondary {
+            background-color: #fff;
+            color: #666;
+            border: 1px solid #ddd;
+            padding: 8px 20px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        .btn-lux-outline-secondary:hover {
+            border-color: var(--lux-gold);
+            color: var(--lux-gold);
+        }
+
+    
+        .search-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+            margin-bottom: 30px;
+        }
+        .form-control-lux {
+            border: 1px solid #eee;
+            padding: 10px 15px;
+        }
+        .form-control-lux:focus {
+            border-color: var(--lux-gold);
+            box-shadow: none;
+        }
+
+       
+        .table-luxury {
+            background: #fff;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+        .table-luxury thead th {
+            border: none;
+            background-color: transparent;
+            color: var(--lux-gold);
+            font-family: var(--font-heading);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            padding: 15px;
+            white-space: nowrap;
+        }
+        .table-luxury tbody tr {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+            transition: all 0.3s;
+            background: #fff;
+        }
+        .table-luxury tbody tr:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        }
+        .table-luxury td {
+            border: none;
+            padding: 20px;
+            vertical-align: top;
+        }
+        .table-luxury td:first-child { border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+        .table-luxury td:last-child { border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
+
+      
+        .room-thumb {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+       
+        .price-text {
+            color: var(--lux-dark);
+            font-weight: 700;
+            font-family: var(--font-heading);
+            font-size: 1rem;
+        }
+        .old-price {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 0.85rem;
+        }
+
+    
+        .badge-lux {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            white-space: nowrap; 
+        }
+        .badge-lux-wait { background-color: #fff3cd; color: #856404; }
+        .badge-lux-success { background-color: #d1e7dd; color: #0f5132; }
+        .badge-lux-primary { background-color: #cfe2ff; color: #084298; }
+        .badge-lux-secondary { background-color: #e2e3e5; color: #41464b; }
+        .badge-lux-danger { background-color: #f8d7da; color: #842029; }
+        
+      
+        .badge-rank-1 { background-color: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
+        .badge-rank-2 { background-color: #fff8e1; color: #f57f17; border: 1px solid #ffe082; }
+        .badge-rank-3 { background-color: #e3f2fd; color: #1565c0; border: 1px solid #90caf9; }
+
+       
+        .pagination .page-item .page-link {
+            border: none;
+            color: #666;
+            margin: 0 3px;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .pagination .page-item.active .page-link {
+            background-color: var(--lux-gold);
+            color: #fff;
+        }
+        
+        .icon-gold { color: var(--lux-gold); width: 20px; text-align: center; display: inline-block; }
+    </style>
+{% endblock %}
 
 {% block main_content %}
-<section class="py-5">
+<div class="my-bookings-wrapper py-5">
     <div class="container">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>Đặt phòng của tôi</h2>
-            <a href="{% url 'room_search' %}" class="btn btn-primary">Đặt phòng mới</a>
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h2 class="page-title display-6">Đặt Phòng Của Tôi</h2>
+                <div style="width: 50px; height: 3px; background-color: var(--lux-gold);"></div>
+            </div>
+            <a href="{% url 'room_search' %}" class="btn btn-lux-primary">
+                <i class="fas fa-plus me-2"></i> Đặt phòng mới
+            </a>
         </div>
         
-        
-        <div class="row mb-4">
-            <div class="col-md-8">
-                <form method="get" class="input-group">
-                    <input type="text" class="form-control" name="search" 
-                           placeholder="Tìm theo mã, tên phòng, loại phòng..." value="{{ search_query }}">
-                    <button class="btn btn-outline-secondary" type="submit">
-                        <i class="fas fa-search"></i> Tìm
-                    </button>
-                </form>
-            </div>
-            <div class="col-md-4">
-                <div class="dropdown float-end">
-                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" 
-                            id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-sort"></i> 
-                        {% if sort_by == 'ngay_dat' %}Cũ nhất
-                        {% else %}Mới nhất{% endif %}
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="sortDropdown">
-                        <li><a class="dropdown-item" href="?sort=-ngay_dat&search={{ search_query }}">Mới nhất</a></li>
-                        <li><a class="dropdown-item" href="?sort=ngay_dat&search={{ search_query }}">Cũ nhất</a></li>
-                    </ul>
+        <div class="search-container">
+            <div class="row g-3">
+                <div class="col-md-8">
+                    <form method="get" class="input-group">
+                        <input type="text" class="form-control form-control-lux" name="search" 
+                               placeholder="Tìm theo mã đơn, tên phòng..." value="{{ search_query }}">
+                        <button class="btn btn-lux-primary" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <div class="dropdown d-inline-block">
+                        <button class="btn btn-lux-outline-secondary dropdown-toggle" type="button" 
+                                id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-sort me-1"></i> 
+                            {% if sort_by == 'ngay_dat' %}Cũ nhất{% else %}Mới nhất{% endif %}
+                        </button>
+                        <ul class="dropdown-menu border-0 shadow" aria-labelledby="sortDropdown">
+                            <li><a class="dropdown-item" href="?sort=-ngay_dat&search={{ search_query }}">Mới nhất</a></li>
+                            <li><a class="dropdown-item" href="?sort=ngay_dat&search={{ search_query }}">Cũ nhất</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
         
         {% if page_obj %}
         <div class="table-responsive">
-            <table class="table table-hover align-middle">
-                <thead class="table-light">
+            <table class="table table-luxury align-middle">
+                <thead>
                     <tr>
-                        <th>Mã đặt</th>
+                        <th class="ps-4">Mã đặt</th>
                         <th>Ảnh phòng</th>
                         <th>Thông tin phòng</th>
                         <th>Giá đặt</th>
-                        <th>Lượt thích</th>
-                        <th>Trạng thái</th>
-                        <th>Thao tác</th>
-                        <th>Đánh giá</th>
+                        <th class="text-center">Lượt thích</th>
+                        <th class="text-center" style="min-width: 140px;">Trạng thái</th>
+                        <th class="text-end" >Thao tác</th>
+                        <th class="text-center pe-4">Đánh giá</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for booking in page_obj %}
                     <tr>
+                        <td class="ps-4 fw-bold text-muted">#{{ booking.ma_ddp }}</td>
                         
-                        <td class="fw-bold">#{{ booking.ma_ddp }}</td>
-                        
-                    
                         <td>
-                            <img src="{{ booking.phong.anh_dai_dien.url }}" 
-                                 class="img-thumbnail" 
-                                 style="width: 80px; height: 60px; object-fit: cover;" 
-                                 alt="{{ booking.phong.ten_p }}">
+                            <img src="{{ booking.phong.anh_dai_dien.url }}" class="room-thumb" alt="{{ booking.phong.ten_p }}">
                         </td>
                         
-                        
-                        <td>
-                            <div class="d-flex flex-column">
-                                <span class="fw-bold">{{ booking.phong.ten_p }}</span>
-                                <small class="text-muted">{{ booking.phong.get_loai_p_display }}</small>
-                                <small>
-                                    <i class="far fa-calendar-alt me-1"></i>
+                        <td style="min-width: 300px;">
+                            <div class="d-flex flex-column small text-muted">
+                                <span class="fw-bold text-dark fs-6">{{ booking.phong.ten_p }}</span>
+                                <span class="mb-2 fst-italic">{{ booking.phong.get_loai_p_display }}</span>
+                                
+                                <span class="mb-1">
+                                    <i class="far fa-calendar-alt icon-gold"></i> 
                                     {{ booking.ngay_nhan|date:"d/m/Y" }} - {{ booking.ngay_tra|date:"d/m/Y" }}
-                                </small>
-                                <small class="text-muted">
-            <i class="fas fa-users me-1"></i>
-            Sức chứa: {{ booking.phong.suc_chua }} người
-        </small>
-        <small class="text-muted">
-            <i class="fas fa-concierge-bell me-1"></i>
-            Tiện ích: 
-            {% if booking.phong.tien_ich %}
-                {{ booking.phong.tien_ich }}
-            {% else %}
-                Không có thông tin
-            {% endif %}
-        </small>
-        <small class="text-muted">
-            <i class="fas fa-info-circle me-1"></i>
-            Mô tả: 
-            {% if booking.phong.mo_ta %}
-                {{ booking.phong.mo_ta|truncatewords:10 }}
-            {% else %}
-                Không có mô tả
-            {% endif %}
-        </small>
+                                </span>
+                                
+                                <span class="mb-1">
+                                    <i class="fas fa-users icon-gold"></i> 
+                                    Sức chứa: {{ booking.phong.suc_chua }} người
+                                </span>
+                                
+                                <span class="mb-1">
+                                    <i class="fas fa-concierge-bell icon-gold"></i>
+                                    Tiện ích: {% if booking.phong.tien_ich %}{{ booking.phong.tien_ich }}{% else %}Không có{% endif %}
+                                </span>
+
+                                <span class="mb-1" style="white-space: normal;">
+                                    <i class="fas fa-info-circle icon-gold"></i>
+                                    Mô tả: 
+                                    {% if booking.phong.mo_ta %}
+                                        {{ booking.phong.mo_ta|truncatewords:15 }}
+                                    {% else %}
+                                        Không có mô tả
+                                    {% endif %}
+                                </span>
                             </div>
                         </td>
                         
-                        
-                        <td class="text-nowrap">
-    {% if booking.ma_giam_gia %}
-        <div style="text-decoration: line-through; color: #999; font-size: 0.9em;">
-            {{ booking.gia_ddp|floatformat:0 }} VND
-        </div>
-        <div class="fw-bold text-primary format-price">
-            {{ booking.tong_tien_thuc_te|floatformat:0 }} VND
-        </div>
-        <span class="badge bg-success" style="font-size: 0.7em;">
-            <i class="fas fa-tag"></i> {{ booking.ma_giam_gia.ma_code }}
-        </span>
-    {% else %}
-        <div class="format-price">{{ booking.gia_ddp|floatformat:0 }} VND</div>
-    {% endif %}
-</td>
-                        
-                        
                         <td>
+                            {% if booking.ma_giam_gia %}
+                                <div class="old-price">{{ booking.gia_ddp|floatformat:0 }}</div>
+                                <div class="price-text format-price">{{ booking.tong_tien_thuc_te|floatformat:0 }} VND</div>
+                                <span class="badge bg-light text-success border border-success mt-1" style="font-size: 0.65rem;">
+                           <i class="fas fa-tag"></i> {{ booking.ma_giam_gia.ma_code }}
+                                </span>
+                            {% else %}
+                                <div class="price-text format-price">{{ booking.gia_ddp|floatformat:0 }} VND</div>
+                            {% endif %}
+                        </td>
+                        
+                        <td class="text-center">
                             {% if booking.like_rank %}
-                            <span class="badge 
-                                {% if booking.like_rank == 'Top 1' %}bg-danger
-                                {% elif booking.like_rank == 'Top 2' %}bg-warning text-dark
-                                {% elif booking.like_rank == 'Top 3' %}bg-info text-dark
-                                {% else %}bg-secondary{% endif %}">
-                                {{ booking.like_rank }}
-                            </span>
+                                <span class="badge-lux 
+                                    {% if booking.like_rank == 'Top 1' %}badge-rank-1
+                                    {% elif booking.like_rank == 'Top 2' %}badge-rank-2
+                                    {% elif booking.like_rank == 'Top 3' %}badge-rank-3
+                                    {% else %}badge-lux-secondary{% endif %}">
+                                    {{ booking.like_rank }}
+                                </span>
                             {% else %}
-                            <span class="text-muted">-</span>
+                                <span class="text-muted small">-</span>
                             {% endif %}
                         </td>
                         
-                        
-                        <td>
+                        <td class="text-center">
                             {% if booking.trang_thai == 'cho_xac_nhan' %}
-                            <span class="badge bg-warning">Chờ xác nhận</span>
+                                <span class="badge-lux badge-lux-wait">Chờ xác nhận</span>
                             {% elif booking.trang_thai == 'da_xac_nhan' %}
-                            <span class="badge bg-primary">Đã xác nhận</span>
+                                <span class="badge-lux badge-lux-primary">Đã xác nhận</span>
                             {% elif booking.trang_thai == 'da_checkin' %}
-                            <span class="badge bg-success">Đã check-in</span>
+                                <span class="badge-lux badge-lux-success">Đã check-in</span>
                             {% elif booking.trang_thai == 'da_checkout' %}
-                            <span class="badge bg-secondary">Đã check-out</span>
+                                <span class="badge-lux badge-lux-secondary">Đã check-out</span>
                             {% else %}
-                            <span class="badge bg-danger">Đã hủy</span>
+                                <span class="badge-lux badge-lux-danger">Đã hủy</span>
                             {% endif %}
                         </td>
                         
-                        
-                        <td>
+                        <td class="text-end">
                             <a href="{% url 'booking_detail' booking.ma_ddp %}" 
-                               class="btn btn-sm btn-outline-primary" title="Chi tiết">
-                                <i class="fas fa-info-circle"></i>
+                               class="btn btn-sm btn-outline-dark rounded-circle" 
+                               title="Xem chi tiết" style="width: 32px; height: 32px; padding: 0; line-height: 30px;">
+                                <i class="fas fa-info"></i>
                             </a>
                         </td>
-                         <td>
+
+                        <td class="text-center pe-4">
                             {% if booking.trang_thai == 'da_checkout' %}
                                 {% if not booking.danhgia %}
-                            <a href="{% url 'submit_review' booking.ma_ddp %}" class="btn btn-sm btn-outline-warning">
-                                <i class="fas fa-star"></i> Đánh giá
-                            </a>
+                                    <a href="{% url 'submit_review' booking.ma_ddp %}" class="btn btn-sm btn-outline-warning text-dark" title="Viết đánh giá">
+                                        <i class="fas fa-star text-warning"></i> Đánh giá
+                                    </a>
+                                {% else %}
+                                    <span class="text-success small fw-bold"><i class="fas fa-check-circle me-1"></i> Đã xong</span>
+                                {% endif %}
                             {% else %}
-                            <span class="badge bg-success">Đã đánh giá</span>
+                                <span class="text-muted small">-</span>
                             {% endif %}
-                            {% endif %}
-                            </td>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
         
-        
-        <nav aria-label="Page navigation">
+        <nav aria-label="Page navigation" class="mt-5">
             <ul class="pagination justify-content-center">
                 {% if page_obj.has_previous %}
                 <li class="page-item">
                     <a class="page-link" href="?page=1&sort={{ sort_by }}&search={{ search_query }}" aria-label="First">
-                        <span aria-hidden="true">&laquo;&laquo;</span>
+                        <i class="fas fa-angle-double-left"></i>
                     </a>
                 </li>
                 <li class="page-item">
                     <a class="page-link" href="?page={{ page_obj.previous_page_number }}&sort={{ sort_by }}&search={{ search_query }}" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
+                        <i class="fas fa-angle-left"></i>
                     </a>
                 </li>
                 {% endif %}
                 
                 {% for num in page_obj.paginator.page_range %}
-                {% if page_obj.number == num %}
-                <li class="page-item active"><a class="page-link" href="?page={{ num }}&sort={{ sort_by }}&search={{ search_query }}">{{ num }}</a></li>
-                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                <li class="page-item"><a class="page-link" href="?page={{ num }}&sort={{ sort_by }}&search={{ search_query }}">{{ num }}</a></li>
-                {% endif %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item"><a class="page-link" href="?page={{ num }}&sort={{ sort_by }}&search={{ search_query }}">{{ num }}</a></li>
+                    {% endif %}
                 {% endfor %}
                 
                 {% if page_obj.has_next %}
                 <li class="page-item">
                     <a class="page-link" href="?page={{ page_obj.next_page_number }}&sort={{ sort_by }}&search={{ search_query }}" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
+                        <i class="fas fa-angle-right"></i>
                     </a>
                 </li>
                 <li class="page-item">
                     <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&sort={{ sort_by }}&search={{ search_query }}" aria-label="Last">
-                        <span aria-hidden="true">&raquo;&raquo;</span>
+                        <i class="fas fa-angle-double-right"></i>
                     </a>
                 </li>
                 {% endif %}
             </ul>
         </nav>
+
         {% else %}
-        <div class="alert alert-info text-center">
-            <p>Bạn chưa có đặt phòng nào.</p>
-            <a href="{% url 'room_search' %}" class="btn btn-primary">Đặt phòng ngay</a>
+        <div class="text-center py-5">
+            <div class="mb-4">
+                <i class="fas fa-suitcase-rolling fa-4x text-muted opacity-25"></i>
+            </div>
+            <h5 class="text-muted">Bạn chưa có đặt phòng nào.</h5>
+            <p class="text-muted small mb-4">Hãy bắt đầu kỳ nghỉ mơ ước của bạn ngay hôm nay!</p>
+            <a href="{% url 'room_search' %}" class="btn btn-lux-primary">Đặt phòng ngay</a>
         </div>
         {% endif %}
     </div>
-</section>
+</div>
 {% endblock %}

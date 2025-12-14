@@ -1,39 +1,225 @@
 {% extends 'core/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+    {{ block.super }}
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+       
+        :root {
+            --lux-gold: #c5a880;
+            --lux-gold-hover: #b09060;
+            --lux-dark: #101820;
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .search-page-wrapper {
+            font-family: var(--font-body);
+            color: #4a4a4a;
+            background-color: #fcfbf9;
+            min-height: 80vh;
+        }
+
+        h2, h5, h6 {
+            font-family: var(--font-heading);
+            color: var(--lux-dark);
+        }
+
+       
+        .filter-card {
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            background: #fff;
+            overflow: hidden;
+        }
+
+        .filter-header {
+            background-color: var(--lux-dark);
+            color: #fff;
+            padding: 15px 20px;
+            border-bottom: 3px solid var(--lux-gold);
+        }
+        
+        .filter-header h6 {
+            color: #fff;
+            margin: 0;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .filter-body {
+            padding: 20px;
+        }
+
+        .form-label-lux {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--lux-dark);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .form-select-lux {
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .form-select-lux:focus {
+            border-color: var(--lux-gold);
+            box-shadow: none;
+        }
+
+      
+        .btn-lux-primary {
+            background-color: var(--lux-dark);
+            color: #fff;
+            border: 1px solid var(--lux-dark);
+            padding: 10px 20px;
+            text-transform: uppercase;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            width: 100%;
+        }
+        .btn-lux-primary:hover {
+            background-color: var(--lux-gold);
+            border-color: var(--lux-gold);
+            color: #fff;
+        }
+
+        .btn-lux-outline {
+            background-color: transparent;
+            color: var(--lux-dark);
+            border: 1px solid var(--lux-dark);
+            padding: 8px 20px;
+            text-transform: uppercase;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+        .btn-lux-outline:hover {
+            background-color: var(--lux-dark);
+            color: #fff;
+        }
+
+     
+        .room-card-lux {
+            border: none;
+            background: #fff;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .room-card-lux:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .room-img-wrapper {
+            position: relative;
+            overflow: hidden;
+            height: 220px;
+        }
+
+        .room-card-lux img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .room-card-lux:hover img {
+            transform: scale(1.1);
+        }
+
+        .badge-status {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            z-index: 2;
+        }
+        .bg-success-lux { background-color: rgba(25, 135, 84, 0.9); color: white; }
+        .bg-warning-lux { background-color: rgba(255, 193, 7, 0.9); color: #000; }
+        .bg-primary-lux { background-color: rgba(13, 110, 253, 0.9); color: white; }
+        .bg-secondary-lux { background-color: rgba(108, 117, 125, 0.9); color: white; }
+
+        .room-card-body {
+            padding: 20px;
+        }
+
+        .price-text {
+            color: var(--lux-gold);
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+      
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+        }
+    </style>
+{% endblock %}
 
 {% block main_content %}
-<section class="py-5">
+<div class="search-page-wrapper py-5">
     <div class="container">
-        <h2 class="mb-4">Kết quả tìm kiếm phòng</h2>
+        <div class="text-center mb-5">
+            <p class="text-gold fst-italic mb-1" style="font-family: 'Playfair Display', serif; font-size: 1.2rem;">Khám phá không gian nghỉ dưỡng</p>
+            <h2 class="fw-bold display-5">Kết Quả Tìm Kiếm</h2>
+            <div class="mx-auto mt-2" style="width: 60px; height: 3px; background-color: var(--lux-gold);"></div>
+        </div>
+
         <div class="row">
-            
-            <div class="col-md-3 mb-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h6>Bộ lọc</h6>
+            <div class="col-lg-3 mb-4">
+                <div class="filter-card">
+                    <div class="filter-header">
+                        <h6><i class="fas fa-filter me-2 text-gold"></i> Bộ lọc tìm kiếm</h6>
                     </div>
-                    <div class="card-body">
+                    <div class="filter-body">
                         <form method="get" action="{% url 'room_search' %}">
-                            <div class="mb-3">
-                                <label class="form-label">Tình trạng phòng</label>
-                                <select name="room_status" class="form-select">
+                            <div class="mb-4">
+                                <label class="form-label-lux">Tình trạng phòng</label>
+                                <select name="room_status" class="form-select form-select-lux">
                                     <option value="trong" {% if request.GET.room_status == "trong" or not request.GET.room_status %}selected{% endif %}>Trống</option>
                                     <option value="da_dat" {% if request.GET.room_status == "da_dat" %}selected{% endif %}>Đã đặt</option>
                                     <option value="dang_su_dung" {% if request.GET.room_status == "dang_su_dung" %}selected{% endif %}>Đang sử dụng</option>
                                     <option value="bao_tri" {% if request.GET.room_status == "bao_tri" %}selected{% endif %}>Bảo trì</option>
                                 </select>
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label">Số người</label>
-                                <select name="guests" class="form-select">
+                            
+                            <div class="mb-4">
+                                <label class="form-label-lux">Số người</label>
+                                <select name="guests" class="form-select form-select-lux">
                                     <option value="1" {% if request.GET.guests == "1" %}selected{% endif %}>1 người</option>
                                     <option value="2" {% if request.GET.guests == "2" or not request.GET.guests %}selected{% endif %}>2 người</option>
                                     <option value="3" {% if request.GET.guests == "3" %}selected{% endif %}>3 người</option>
                                     <option value="4" {% if request.GET.guests == "4" %}selected{% endif %}>4 người</option>
                                 </select>
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label">Loại phòng</label>
-                                <select name="room_type" class="form-select">
+                            
+                            <div class="mb-4">
+                                <label class="form-label-lux">Loại phòng</label>
+                                <select name="room_type" class="form-select form-select-lux">
                                     <option value="">Tất cả</option>
                                     <option value="standard" {% if request.GET.room_type == "standard" %}selected{% endif %}>Standard</option>
                                     <option value="deluxe" {% if request.GET.room_type == "deluxe" %}selected{% endif %}>Deluxe</option>
@@ -41,38 +227,48 @@
                                     <option value="family" {% if request.GET.room_type == "family" %}selected{% endif %}>Gia đình</option>
                                 </select>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
+                            
+                            <button type="submit" class="btn-lux-primary">
+                                <i class="fas fa-search me-2"></i> Áp dụng bộ lọc
+                            </button>
                         </form>
                     </div>
                 </div>
             </div>
 
-            
-            <div class="col-md-9">
+            <div class="col-lg-9">
                 {% if rooms %}
-                <div class="row">
+                <div class="row g-4">
                     {% for room in rooms %}
-                    <div class="col-md-6 mb-4">
-                        <div class="card room-card h-100">
-                            <img src="{{ room.anh_dai_dien.url }}" class="card-img-top" alt="{{ room.loai_p }}" style="height: 200px; object-fit: cover;">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <h5 class="card-title mb-0">{{ room.get_loai_p_display }}</h5>
-                                    <span class="badge 
-                                        {% if room.trang_thai == 'trong' %}bg-success
-                                        {% elif room.trang_thai == 'da_dat' %}bg-warning text-dark
-                                        {% elif room.trang_thai == 'dang_su_dung' %}bg-primary
-                                        {% else %}bg-secondary{% endif %}">
-                                        {{ room.get_trang_thai_display }}
-                                    </span>
+                    <div class="col-md-6">
+                        <div class="room-card-lux">
+                            <div class="room-img-wrapper">
+                                <img src="{{ room.anh_dai_dien.url }}" alt="{{ room.loai_p }}">
+                                <span class="badge-status 
+                                    {% if room.trang_thai == 'trong' %}bg-success-lux
+                                    {% elif room.trang_thai == 'da_dat' %}bg-warning-lux
+                                    {% elif room.trang_thai == 'dang_su_dung' %}bg-primary-lux
+                                    {% else %}bg-secondary-lux{% endif %}">
+                                    {{ room.get_trang_thai_display }}
+                                </span>
+                            </div>
+                            <div class="room-card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h5 class="card-title mb-0 fw-bold">{{ room.get_loai_p_display }}</h5>
                                 </div>
-                                <p class="card-text text-muted mt-2">{{ room.mo_ta|truncatechars:100 }}</p>
-                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                
+                                <p class="card-text text-muted small mb-3" style="min-height: 40px;">
+                                    {{ room.mo_ta|truncatechars:90 }}
+                                </p>
+                                
+                                <div class="d-flex justify-content-between align-items-end pt-3 border-top">
                                     <div>
-                                        <span class="text-primary fw-bold">{{ room.gia|floatformat:0 }} VND</span>
-                                        <span class="d-block text-muted small">/đêm</span>
+                                        <span class="price-text format-price">{{ room.gia|floatformat:0 }} VND</span>
+                                        <small class="text-muted">/đêm</small>
                                     </div>
-                                    <a href="{% url 'room_detail' room.ma_p %}" class="btn btn-sm btn-outline-primary">Xem chi tiết</a>
+                                    <a href="{% url 'room_detail' room.ma_p %}" class="btn-lux-outline">
+                                        Xem chi tiết <i class="fas fa-arrow-right ms-1"></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -80,12 +276,14 @@
                     {% endfor %}
                 </div>
                 {% else %}
-                <div class="alert alert-warning">
-                    Không tìm thấy phòng phù hợp với tiêu chí của bạn. Vui lòng thử lại với các tiêu chí khác.
+                <div class="empty-state">
+                    <i class="fas fa-search fa-3x text-muted opacity-25 mb-3"></i>
+                    <h5 class="text-muted">Không tìm thấy phòng phù hợp</h5>
+                    <p class="text-muted small mb-0">Rất tiếc, không có phòng nào khớp với tiêu chí tìm kiếm của bạn. Vui lòng thử thay đổi bộ lọc.</p>
                 </div>
                 {% endif %}
             </div>
         </div>
     </div>
-</section>
+</div>
 {% endblock %}

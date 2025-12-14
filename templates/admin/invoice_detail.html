@@ -1,0 +1,148 @@
+{% extends 'admin/base.html' %}
+{% load humanize %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'admin_invoice_management' %}">Quản lý hóa đơn</a></li>
+<li class="breadcrumb-item active">Chi tiết hóa đơn #{{ invoice.ma_hd }}</li>
+{% endblock %}
+
+{% block admin_content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="mb-3 text-end d-print-none">
+            {% if not invoice.da_thanh_toan %}
+            <form method="post" style="display: inline;">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="mark_paid">
+                <button type="submit" class="btn btn-success me-2">
+                    <i class="fas fa-check-circle"></i> Xác nhận thanh toán
+                </button>
+            </form>
+            {% endif %}
+            <button onclick="window.print()" class="btn btn-primary">
+                <i class="fas fa-print"></i> In Hóa Đơn
+            </button>
+        </div>
+
+        <div class="card shadow border-0" id="invoice-print">
+            <div class="card-body p-5">
+                <div class="row border-bottom pb-4 mb-4">
+                    <div class="col-6">
+                        <h4 class="fw-bold text-uppercase">Hóa Đơn GTGT</h4>
+                        <div class="text-muted">Mã số: #{{ invoice.ma_hd }}</div>
+                        <div class="text-muted">Ngày: {{ invoice.ngay_tao|date:"d/m/Y H:i" }}</div>
+                        <div class="mt-2">
+                            {% if invoice.da_thanh_toan %}
+                                <span class="badge bg-success border border-success text-white px-3 py-2">ĐÃ THANH TOÁN</span>
+                            {% else %}
+                                <span class="badge bg-warning border border-warning text-dark px-3 py-2">CHƯA THANH TOÁN</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-6 text-end">
+                        <h5 class="fw-bold" style="color: #3498db;">CROWNE PLAZA HOTEL</h5>
+                        <p class="mb-1 text-muted">8 Võ Nguyên Giáp, Street, Ward</p>
+                        <p class="mb-1 text-muted">TP. Đà Nẵng, Việt Nam</p>
+                        <p class="mb-1 text-muted">Hotline: 1900 1234</p>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-6">
+                        <h6 class="fw-bold text-uppercase text-muted mb-3">Khách hàng</h6>
+                        <h5 class="fw-bold">{{ booking.khach_hang.ten_kh }}</h5>
+                        <p class="mb-1">{{ booking.khach_hang.sdt }}</p>
+                        <p class="mb-1">{{ booking.khach_hang.email }}</p>
+                    </div>
+                    <div class="col-6 text-end">
+                        <h6 class="fw-bold text-uppercase text-muted mb-3">Chi tiết đặt phòng</h6>
+                        <p class="mb-1"><strong>Mã đặt phòng:</strong> #{{ booking.ma_ddp }}</p>
+                        <p class="mb-1"><strong>Phòng:</strong> {{ booking.phong.ten_p }} ({{ booking.phong.get_loai_p_display }})</p>
+                        <p class="mb-1"><strong>Check-in:</strong> {{ booking.ngay_nhan|date:"d/m/Y" }}</p>
+                        <p class="mb-1"><strong>Check-out:</strong> {{ booking.ngay_tra|date:"d/m/Y" }}</p>
+                    </div>
+                </div>
+
+                <div class="table-responsive mb-4">
+                    <table class="table table-striped">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Mô tả</th>
+                                <th class="text-center">SL</th>
+                                <th class="text-end">Đơn giá</th>
+                                <th class="text-end">Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <strong>Tiền thuê phòng</strong><br>
+                                    <small class="text-muted">{{ booking.ngay_nhan|date:"d/m" }} - {{ booking.ngay_tra|date:"d/m" }}</small>
+                                </td>
+                                <td class="text-center">1</td>
+                                <td class="text-end">{{ booking.gia_ddp|intcomma }} đ</td>
+                                <td class="text-end">{{ booking.gia_ddp|intcomma }} đ</td>
+                            </tr>
+
+                            {% for service in services %}
+                            <tr>
+                                <td>Dịch vụ: {{ service.dich_vu.ten_dv }}</td>
+                                <td class="text-center">{{ service.so_luong }}</td>
+                                <td class="text-end">{{ service.dich_vu.phi_dv|intcomma }} đ</td>
+                                <td class="text-end">{{ service.thanh_tien|intcomma }} đ</td>
+                            </tr>
+                            {% endfor %}
+
+                            {% if booking.ma_giam_gia %}
+                            <tr class="text-success">
+                                <td>Mã giảm giá ({{ booking.ma_giam_gia.ma_code }})</td>
+                                <td></td>
+                                <td></td>
+                                <td class="text-end">
+                                    - {% widthratio booking.gia_ddp 1 1|add:booking.tong_tien_thuc_te|add:"-1" %} đ
+                                    </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                        <tfoot class="bg-light">
+                            <tr class="fw-bold fs-5">
+                                <td colspan="3" class="text-end">TỔNG CỘNG:</td>
+                                <td class="text-end text-primary">{{ invoice.tong_tien|intcomma }} đ</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="row mt-5 pt-4 border-top">
+                    <div class="col-12 text-center text-muted">
+                        <p>Cảm ơn quý khách đã sử dụng dịch vụ của chúng tôi!</p>
+                        <p class="small">Đây là hóa đơn điện tử.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        #invoice-print, #invoice-print * {
+            visibility: visible;
+        }
+        #invoice-print {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            border: none !important;
+            box-shadow: none !important;
+        }
+        .d-print-none {
+            display: none !important;
+        }
+    }
+</style>
+{% endblock %}

@@ -1,184 +1,391 @@
 {% extends 'core/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+    {{ block.super }}
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+       
+        :root {
+            --lux-gold: #c5a880;
+            --lux-gold-hover: #b09060;
+            --lux-dark: #101820;
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .booking-detail-wrapper {
+            font-family: var(--font-body);
+            color: #4a4a4a;
+            background-color: #fcfbf9;
+            min-height: 80vh;
+        }
+
+        h2, h4, h5 {
+            font-family: var(--font-heading);
+            color: var(--lux-dark);
+        }
+
+    
+        .card-lux {
+            border: none;
+            background: #fff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .card-lux-header {
+            background-color: var(--lux-dark);
+            color: #fff;
+            padding: 15px 20px;
+            border-bottom: 3px solid var(--lux-gold);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-lux-header h5 {
+            color: #fff;
+            margin: 0;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card-lux-body {
+            padding: 25px;
+        }
+
+      
+        .btn-lux-primary {
+            background-color: var(--lux-dark);
+            color: #fff;
+            border: 1px solid var(--lux-dark);
+            padding: 8px 20px;
+            text-transform: uppercase;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+        .btn-lux-primary:hover {
+            background-color: var(--lux-gold);
+            border-color: var(--lux-gold);
+            color: #fff;
+        }
+
+        .btn-lux-outline {
+            background-color: transparent;
+            color: #666;
+            border: 1px solid #ddd;
+            padding: 8px 20px;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+        .btn-lux-outline:hover {
+            border-color: var(--lux-gold);
+            color: var(--lux-gold);
+        }
+
+        .btn-lux-danger {
+            background-color: #fff;
+            color: #dc3545;
+            border: 1px solid #dc3545;
+            padding: 8px 20px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-lux-danger:hover {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+       
+        .badge-lux {
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+        .badge-warning { background-color: #fff3cd; color: #856404; }
+        .badge-primary { background-color: #cfe2ff; color: #084298; }
+        .badge-success { background-color: #d1e7dd; color: #0f5132; }
+        .badge-secondary { background-color: #e2e3e5; color: #41464b; }
+        .badge-danger { background-color: #f8d7da; color: #842029; }
+
+       
+        .info-label {
+            font-weight: 600;
+            color: #888;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .info-value {
+            font-size: 1rem;
+            color: var(--lux-dark);
+            font-weight: 500;
+        }
+
+       
+        .table-lux {
+            margin-bottom: 0;
+        }
+        .table-lux thead th {
+            border-bottom: 2px solid #eee;
+            color: var(--lux-gold);
+            font-family: var(--font-heading);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+        .table-lux td {
+            vertical-align: middle;
+            border-bottom: 1px solid #f9f9f9;
+            padding: 15px 10px;
+        }
+
+       
+        .modal-content-lux {
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .modal-header-lux {
+            background-color: var(--lux-dark);
+            color: #fff;
+            border-bottom: 3px solid var(--lux-gold);
+        }
+        .modal-header-lux .btn-close {
+            filter: invert(1);
+        }
+        .form-control-lux, .form-select-lux {
+            border: 1px solid #eee;
+            padding: 10px;
+            border-radius: 6px;
+        }
+        .form-control-lux:focus, .form-select-lux:focus {
+            border-color: var(--lux-gold);
+            box-shadow: none;
+        }
+    </style>
+{% endblock %}
 
 {% block main_content %}
-<section class="py-5">
+<div class="booking-detail-wrapper py-5">
     <div class="container">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>Chi tiết đặt phòng #{{ booking.ma_ddp }}</h2>
-            <a href="{% url 'customer_bookings' %}" class="btn btn-outline-secondary">Quay lại</a>
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h2 class="fw-bold display-6 mb-0">Chi Tiết Đặt Phòng <span class="text-gold">#{{ booking.ma_ddp }}</span></h2>
+            </div>
+            <a href="{% url 'customer_bookings' %}" class="btn btn-lux-outline">
+                <i class="fas fa-arrow-left me-2"></i> Quay lại
+            </a>
         </div>
         
         <div class="row">
-            <div class="col-md-6">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5>Thông tin phòng</h5>
+            <div class="col-lg-8">
+                
+                <div class="card-lux">
+                    <div class="card-lux-header">
+                        <h5>Thông tin đặt phòng</h5>
+                        <span class="badge-lux 
+                            {% if booking.trang_thai == 'da_xac_nhan' %}badge-success
+                            {% elif booking.trang_thai == 'da_checkin' %}badge-primary
+                            {% elif booking.trang_thai == 'da_checkout' %}badge-secondary
+                            {% elif booking.trang_thai == 'cho_xac_nhan' %}badge-warning
+                            {% else %}badge-danger{% endif %}">
+                            {{ booking.get_trang_thai_display }}
+                        </span>
                     </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <img src="{{ booking.phong.anh_dai_dien.url }}" class="img-fluid rounded" alt="Room Image">
+                    <div class="card-lux-body">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <span class="info-label">Ngày nhận phòng</span>
+                                    <span class="info-value"><i class="far fa-calendar-check me-2 text-gold"></i>{{ booking.ngay_nhan|date:"d/m/Y" }}</span>
+                                </div>
+                                <div class="mb-3">
+                                    <span class="info-label">Số lượng khách</span>
+                                    <span class="info-value"><i class="fas fa-users me-2 text-gold"></i>{{ booking.so_luong_nguoi }} người</span>
+                                </div>
+                                <div>
+                                    <span class="info-label">Tổng thanh toán</span>
+                                    {% if booking.ma_giam_gia %}
+                                        <div class="d-flex align-items-center">
+                                            <span class="text-muted text-decoration-line-through me-2 small">{{ booking.gia_ddp|floatformat:0 }}</span>
+                                            <span class="info-value text-gold fw-bold format-price">{{ booking.tong_tien_thuc_te|floatformat:0 }} VND</span>
+                                        </div>
+                                        <small class="text-success"><i class="fas fa-tag me-1"></i>Voucher: {{ booking.ma_giam_gia.ma_code }}</small>
+                                    {% else %}
+                                        <span class="info-value text-gold fw-bold format-price">{{ booking.gia_ddp|floatformat:0 }} VND</span>
+                                    {% endif %}
+                                </div>
                             </div>
-                            <div class="col-md-8">
-                                <h5>{{ booking.phong.ten_p }}</h5>
-                                <p>{{ booking.phong.get_loai_p_display }}</p>
-                                <p>Sức chứa: {{ booking.phong.suc_chua }} người</p>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <span class="info-label">Ngày trả phòng</span>
+                                    <span class="info-value"><i class="far fa-calendar-times me-2 text-gold"></i>{{ booking.ngay_tra|date:"d/m/Y" }}</span>
+                                </div>
+                                <div class="mb-3">
+                                    <span class="info-label">Ghi chú</span>
+                                    <span class="info-value text-muted fst-italic">{% if booking.ghi_chu %}{{ booking.ghi_chu }}{% else %}Không có{% endif %}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5>Thông tin đặt phòng</h5>
-                    </div>
-                    <div class="card-body">
-                        <p><strong>Ngày nhận phòng:</strong> {{ booking.ngay_nhan|date:"d/m/Y" }}</p>
-                        <p><strong>Ngày trả phòng:</strong> {{ booking.ngay_tra|date:"d/m/Y" }}</p>
-                        <p><strong>Số người:</strong> {{ booking.so_luong_nguoi }}</p>
-                        <p class="format-price">
-    {% if booking.ma_giam_gia %}
-        <strong>Tổng tiền gốc:</strong> 
-        <span style="text-decoration: line-through; color: #999;">
-            {{ booking.gia_ddp|floatformat:0 }} VND
-        </span>
-    {% else %}
-        <strong>Tổng tiền:</strong> {{ booking.gia_ddp|floatformat:0 }} VND
-    {% endif %}
-</p>
 
-                        {% if booking.ma_giam_gia %}
-                        <p class="text-success">
-                        <strong>Đã áp dụng mã giảm giá:</strong> {{ booking.ma_giam_gia.ma_code }}
-                        </p>
-                        <p class="format-price h5 text-primary">
-                        <strong>Thực trả:</strong> {{ booking.tong_tien_thuc_te|floatformat:0 }} VND
-                        </p>
-                        {% endif %}
-                        <p><strong>Trạng thái:</strong> 
-                            {% if booking.trang_thai == 'cho_xac_nhan' %}
-                            <span class="badge bg-warning">Chờ xác nhận</span>
-                            {% elif booking.trang_thai == 'da_xac_nhan' %}
-                            <span class="badge bg-primary">Đã xác nhận</span>
-                            {% elif booking.trang_thai == 'da_checkin' %}
-                            <span class="badge bg-success">Đã check-in</span>
-                            {% elif booking.trang_thai == 'da_checkout' %}
-                            <span class="badge bg-secondary">Đã check-out</span>
-                            {% else %}
-                            <span class="badge bg-danger">Đã hủy</span>
-                            {% endif %}
-                        </p>
-                        {% if booking.ghi_chu %}
-                        <p><strong>Ghi chú:</strong> {{ booking.ghi_chu }}</p>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-6">
-                <div class="card mb-4">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Dịch vụ đã đặt</h5>
+                <div class="card-lux">
+                    <div class="card-lux-header">
+                        <h5>Dịch vụ đã đặt</h5>
                         {% if booking.trang_thai == 'da_xac_nhan' or booking.trang_thai == 'da_checkin' %}
-                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addServiceModal">Thêm dịch vụ</button>
+                        <button class="btn btn-sm btn-light text-dark fw-bold" data-bs-toggle="modal" data-bs-target="#addServiceModal">
+                            <i class="fas fa-plus me-1"></i> Thêm dịch vụ
+                        </button>
                         {% endif %}
                     </div>
-                    <div class="card-body">
+                    <div class="card-lux-body p-0">
                         {% if services %}
                         <div class="table-responsive">
-                            <table class="table table-sm">
+                            <table class="table table-lux">
                                 <thead>
                                     <tr>
-                                        <th>Dịch vụ</th>
-                                        <th>Ngày sử dụng</th>
-                                        <th>Số lượng</th>
-                                        <th>Thành tiền</th>
+                                        <th class="ps-4">Tên dịch vụ</th>
+                                        <th>Thời gian</th>
+                                        <th class="text-center">Số lượng</th>
+                                        <th class="text-end pe-4">Thành tiền</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for service in services %}
                                     <tr>
-                                        <td>{{ service.dich_vu.ten_dv }}</td>
-                                        <td>{{ service.ngay_su_dung|date:"d/m/Y" }} {{ service.gio_su_dung|time:"H:i" }}</td>
-                                        <td>{{ service.so_luong }}</td>
-                                        <td class="format-price">{{ service.thanh_tien|floatformat:0 }} VND</td>
+                                        <td class="ps-4 fw-bold">{{ service.dich_vu.ten_dv }}</td>
+                                        <td>{{ service.ngay_su_dung|date:"d/m/Y" }} <small class="text-muted">{{ service.gio_su_dung|time:"H:i" }}</small></td>
+                                        <td class="text-center">{{ service.so_luong }}</td>
+                                        <td class="text-end pe-4 format-price">{{ service.thanh_tien|floatformat:0 }} VND</td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
                         </div>
                         {% else %}
-                        <p class="text-muted">Chưa có dịch vụ nào được đặt</p>
+                        <div class="text-center py-4">
+                            <p class="text-muted mb-0 fst-italic">Chưa có dịch vụ nào được đặt kèm.</p>
+                        </div>
                         {% endif %}
                     </div>
                 </div>
                 
                 {% if booking.trang_thai == 'cho_xac_nhan' %}
-                <div class="card">
-                    <div class="card-header">
-                        <h5>Hủy đặt phòng</h5>
+                <div class="card-lux border border-danger">
+                    <div class="card-lux-header bg-danger border-bottom-0">
+                        <h5><i class="fas fa-exclamation-triangle me-2"></i> Hủy đặt phòng</h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-lux-body">
+                        <p class="text-muted small mb-3">Lưu ý: Hành động này không thể hoàn tác. Vui lòng nhập lý do hủy bên dưới.</p>
                         <form method="post" action="{% url 'booking_detail' booking.ma_ddp %}">
                             {% csrf_token %}
                             <input type="hidden" name="action" value="cancel">
                             <div class="mb-3">
-                                <label class="form-label">Lý do hủy</label>
-                                <textarea name="cancel_reason" class="form-control" rows="3" required></textarea>
+                                <label class="form-label fw-bold small text-uppercase">Lý do hủy</label>
+                                <textarea name="cancel_reason" class="form-control form-control-lux" rows="3" required placeholder="Nhập lý do..."></textarea>
                             </div>
-                            <button type="submit" class="btn btn-danger">Xác nhận hủy</button>
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-lux-danger">Xác nhận hủy</button>
+                            </div>
                         </form>
                     </div>
                 </div>
                 {% endif %}
             </div>
+
+            <div class="col-lg-4">
+                <div class="card-lux sticky-top" style="top: 100px;">
+                    <div class="card-lux-header">
+                        <h5>Thông tin phòng</h5>
+                    </div>
+                    <img src="{{ booking.phong.anh_dai_dien.url }}" class="card-img-top" alt="Room Image" style="height: 200px; object-fit: cover;">
+                    <div class="card-lux-body">
+                        <h4 class="mb-1">{{ booking.phong.ten_p }}</h4>
+                        <p class="text-muted small mb-3">{{ booking.phong.get_loai_p_display }}</p>
+                        
+                        <div class="mb-3 pb-3 border-bottom">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Sức chứa</span>
+                                <span class="fw-bold">{{ booking.phong.suc_chua }} người</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">Giá phòng</span>
+                                <span class="fw-bold text-gold format-price">{{ booking.phong.gia|floatformat:0 }} VND/đêm</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <span class="info-label mb-2">Tiện ích nổi bật</span>
+                            <p class="small text-muted mb-0">
+                                {% if booking.phong.tien_ich %}
+                                    {{ booking.phong.tien_ich }}
+                                {% else %}
+                                    Đang cập nhật...
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</section>
-
+</div>
 
 <div class="modal fade" id="addServiceModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Thêm dịch vụ</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-lux">
+            <div class="modal-header modal-header-lux">
+                <h5 class="modal-title">Thêm Dịch Vụ Mới</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form method="post" action="{% url 'booking_detail' booking.ma_ddp %}">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="add_service">
-                <div class="modal-body">
+                <div class="modal-body p-4">
                     <div class="mb-3">
-                        <label class="form-label">Dịch vụ</label>
-                        <select name="service_id" class="form-select" required>
-                            <option value="" selected disabled>Chọn dịch vụ</option>
+                        <label class="form-label fw-bold small text-uppercase">Chọn dịch vụ</label>
+                        <select name="service_id" class="form-select form-select-lux" required>
+                            <option value="" selected disabled>-- Vui lòng chọn --</option>
                             {% for service in available_services %}
                             <option value="{{ service.ma_dv }}">{{ service.ten_dv }} - {{ service.phi_dv|floatformat:0 }} VND</option>
                             {% empty %}
-                            <option value="" disabled>Không có dịch vụ nào</option>
+                            <option value="" disabled>Không có dịch vụ khả dụng</option>
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Ngày sử dụng</label>
-                        <input type="date" name="service_date" class="form-control" required>
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <label class="form-label fw-bold small text-uppercase">Ngày sử dụng</label>
+                            <input type="date" name="service_date" class="form-control form-control-lux" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-bold small text-uppercase">Giờ sử dụng</label>
+                            <input type="time" name="service_time" class="form-control form-control-lux" required>
+                        </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Giờ sử dụng</label>
-                        <input type="time" name="service_time" class="form-control" required>
+                        <label class="form-label fw-bold small text-uppercase">Số lượng</label>
+                        <input type="number" name="quantity" class="form-control form-control-lux" min="1" value="1" required>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Số lượng</label>
-                        <input type="number" name="quantity" class="form-control" min="1" value="1" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Ghi chú</label>
-                        <textarea name="note" class="form-control" rows="3"></textarea>
+                    <div class="mb-0">
+                        <label class="form-label fw-bold small text-uppercase">Ghi chú thêm</label>
+                        <textarea name="note" class="form-control form-control-lux" rows="2"></textarea>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                    <button type="submit" class="btn btn-primary">Thêm dịch vụ</button>
+                <div class="modal-footer border-0 pt-0 pb-4 pe-4">
+                    <button type="button" class="btn btn-lux-outline" data-bs-dismiss="modal">Hủy bỏ</button>
+                    <button type="submit" class="btn btn-lux-primary ms-2">Xác nhận thêm</button>
                 </div>
             </form>
         </div>
